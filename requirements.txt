@@ -1,0 +1,10 @@
+#
+# Required packages for ReCodEx monitor tool
+#
+
+# ZeroMQ
+pyzmq
+
+# WebSockets
+websockets
+
