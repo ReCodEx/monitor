@@ -7,4 +7,5 @@ pyzmq
 
 # WebSockets
 websockets
+asyncio
 
