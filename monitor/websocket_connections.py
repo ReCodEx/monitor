@@ -88,6 +88,11 @@ class ClientConnections:
 
 
 class WebsocketServer(threading.Thread):
+    """
+    Websocket server, which handles all connection asynchronously in one
+    (separate) thread. To start server, call start() method, for waiting to
+    finish, there is join() method (as in threading.Thread class).
+    """
 
     def __init__(self, websock_uri, connections, loop):
         """
