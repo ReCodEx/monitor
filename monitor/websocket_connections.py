@@ -107,7 +107,7 @@ class WebsocketServer(threading.Thread):
         self._connections = connections
         self._loop = loop
         hostname, port = websock_uri
-        asyncio.set_event_loop(self._loop)
+        asyncio.set_event_loop(loop)
         start_server = websockets.serve(self.connection_handler, hostname, port)
         loop.run_until_complete(start_server)
         print("Server started on {}:{}".format(hostname, port))

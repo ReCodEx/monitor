@@ -57,7 +57,3 @@ class TestClientConnections(unittest.TestCase):
         self.assertEqual(fut.result(), "testing message", "Future changed value")
         ret3 = self._connections.send_message("51236", "random string")
         self.assertFalse(ret3, "Message sent to nonexisting host id")
-
-
-if __name__ == '__main__':
-    unittest.main()

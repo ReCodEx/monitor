@@ -15,5 +15,6 @@ How to run it
 
 - install ``python3`` and ``pip`` according to your OS
 - install dependencies executing ``pip install -r requirements.txt``
-- run ``python monitor/main.py``
+- run tests by ``python monitor/tests``
+- run app by ``python monitor/main.py``
 
