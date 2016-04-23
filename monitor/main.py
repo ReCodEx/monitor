@@ -6,7 +6,6 @@ Script which runs the monitor - tool for resending messages from ZeroMQ to WebSo
 from monitor import websocket_connections as wc
 from monitor import zeromq_connection as zc
 from monitor import config_manager as cm
-import threading
 import asyncio
 import time
 
@@ -19,12 +18,11 @@ def main(argv=None):
     # create event loop for websocket server thread
     loop = asyncio.new_event_loop()
 
-    websock_thread = None
+    websock_server = None
     try:
         # run websocket part of monitor in separate thread
-        websock_thread = threading.Thread(target=wc.run_websock_server,
-                                          args=(connections, config.get_websocket_uri(), loop))
-        websock_thread.start()
+        websock_server = wc.WebsocketServer(config.get_websocket_uri(), connections, loop)
+        websock_server.start()
         time.sleep(1)  # wait for new thread to start and print URI
 
         # create zeromq connection
@@ -41,8 +39,8 @@ def main(argv=None):
         print("Quiting...")
         loop.call_soon_threadsafe(connections.remove_all_clients)
         loop.call_soon_threadsafe(loop.stop)
-        if websock_thread:
-            websock_thread.join()
+        if websock_server:
+            websock_server.join()
         loop.close()
 
 if __name__ == "__main__":
