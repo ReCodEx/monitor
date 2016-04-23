@@ -10,7 +10,7 @@ context = zmq.Context()
 zmq_socket = context.socket(zmq.PUSH)
 zmq_socket.connect("tcp://127.0.0.1:7894")
 
-print("Write messages with format <ID>, <MESSAGE>")
+print("Write messages with format <ID>,<MESSAGE>")
 try:
     while True:
         message = input("> ")

@@ -11,6 +11,11 @@ import time
 
 
 def main(argv=None):
+    """
+    Main function of monitor program.
+    :param argv: Parameters from command line. Not used
+    :return: Nothing
+    """
     # here we'll store all active connections
     connections = wc.ClientConnections()
     # get configuration
