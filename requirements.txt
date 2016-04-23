@@ -1,3 +1,4 @@
+zmq
 #
 # Required packages for ReCodEx monitor tool
 #

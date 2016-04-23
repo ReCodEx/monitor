@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""
+Handle websocket clients and corresponding requests.
+"""
 
 import asyncio
 import websockets

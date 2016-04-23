@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Script which runs the monitor - tool for resending messages from ZeroMQ to WebSockets.
 """
 
 from monitor import websocket_connections as wc
+from monitor import zeromq_connection as zc
 from monitor import config_manager as cm
 import threading
 import asyncio
@@ -20,15 +21,20 @@ def main(argv=None):
 
     websock_thread = None
     try:
+        # run websocket part of monitor in separate thread
         websock_thread = threading.Thread(target=wc.run_websock_server,
                                           args=(connections, config.get_websocket_uri(), loop))
         websock_thread.start()
         time.sleep(1)  # wait for new thread to start and print URI
-        while True:
-            text = input("> ")
-            if text == "exit":
-                break
-            loop.call_soon_threadsafe(connections.send_message, "1234", text)
+
+        # create zeromq connection
+        zmq_server = zc.ServerConnection(*config.get_zeromq_uri())
+
+        # specify callback for zeromq incoming message
+        def message_callback(client_id, data):
+            loop.call_soon_threadsafe(connections.send_message, client_id, data)
+        # start zeromq server with given callback
+        zmq_server.start(message_callback)
     except KeyboardInterrupt:
         pass
     finally:
