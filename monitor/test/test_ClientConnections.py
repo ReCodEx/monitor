@@ -2,12 +2,12 @@
 
 import unittest
 import asyncio
-from monitor import websocket_connections as wc
+from monitor.websocket_connections import ClientConnections
 
 
 class TestClientConnections(unittest.TestCase):
     def setUp(self):
-        self._connections = wc.ClientConnections()
+        self._connections = ClientConnections()
 
     def test_add_client(self):
         fut = self._connections.add_client("1234")

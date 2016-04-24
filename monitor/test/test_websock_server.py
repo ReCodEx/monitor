@@ -3,7 +3,7 @@
 import unittest
 import asyncio
 from unittest.mock import *
-from monitor import websocket_connections as wc
+from monitor.websocket_connections import WebsocketServer
 
 
 class TestWebsocketServer(unittest.TestCase):
@@ -12,8 +12,8 @@ class TestWebsocketServer(unittest.TestCase):
     def test_init(self, mock_websock_serve, mock_set_loop):
         loop = MagicMock()
         mock_websock_serve.return_value = "0101"
-        wc.WebsocketServer.connection_handler = MagicMock()
-        server = wc.WebsocketServer(("ip_address", 4512), None, loop)
+        WebsocketServer.connection_handler = MagicMock()
+        server = WebsocketServer(("ip_address", 4512), None, loop)
 
         self.assertEqual(server._loop, loop)
         self.assertIsNone(server._connections)
@@ -40,7 +40,7 @@ class TestWebsocketServer(unittest.TestCase):
         first_future.set_result("result text")
         second_future.cancel()
 
-        websock_server = wc.WebsocketServer(("localhost", 11111), connection_mock, loop)
+        websock_server = WebsocketServer(("localhost", 11111), connection_mock, loop)
         # actually call the method
         loop.run_until_complete(websock_server.connection_handler(websocket_mock, None))
 
@@ -54,7 +54,7 @@ class TestWebsocketServer(unittest.TestCase):
     @patch('asyncio.set_event_loop')
     def test_run(self, mock_set_loop):
         loop = MagicMock()
-        server = wc.WebsocketServer(("ip_address", 123), None, loop)
+        server = WebsocketServer(("ip_address", 123), None, loop)
         server.run()
         mock_set_loop.assert_called_with(loop)
         loop.run_forever.assert_called_once_with()

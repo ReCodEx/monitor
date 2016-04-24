@@ -1,10 +1,9 @@
-zmq
 #
 # Required packages for ReCodEx monitor tool
 #
 
 # ZeroMQ
-pyzmq
+zmq
 
 # WebSockets
 websockets

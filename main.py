@@ -3,9 +3,9 @@
 Script which runs the monitor - tool for resending messages from ZeroMQ to WebSockets.
 """
 
-from monitor import websocket_connections as wc
-from monitor import zeromq_connection as zc
-from monitor import config_manager as cm
+from monitor.websocket_connections import ClientConnections, WebsocketServer
+from monitor.zeromq_connection import ServerConnection
+from monitor.config_manager import ConfigManager
 import asyncio
 import time
 
@@ -17,21 +17,21 @@ def main(argv=None):
     :return: Nothing
     """
     # here we'll store all active connections
-    connections = wc.ClientConnections()
+    connections = ClientConnections()
     # get configuration
-    config = cm.ConfigManager()
+    config = ConfigManager()
     # create event loop for websocket server thread
     loop = asyncio.new_event_loop()
 
     websock_server = None
     try:
         # run websocket part of monitor in separate thread
-        websock_server = wc.WebsocketServer(config.get_websocket_uri(), connections, loop)
+        websock_server = WebsocketServer(config.get_websocket_uri(), connections, loop)
         websock_server.start()
         time.sleep(1)  # wait for new thread to start and print URI
 
         # create zeromq connection
-        zmq_server = zc.ServerConnection(*config.get_zeromq_uri())
+        zmq_server = ServerConnection(*config.get_zeromq_uri())
 
         # specify callback for zeromq incoming message
         def message_callback(client_id, data):

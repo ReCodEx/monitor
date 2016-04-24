@@ -30,7 +30,8 @@ class ServerConnection:
         :param message_callback: Function to be called when new messages arrived.
         This function should not block for long. Required are two parameters, first
         is id of stream and second is text of the message. Both are strings.
-        :return: Nothing
+        :return: True if exited normally (by "exit" message with ID 0), False if
+        socket error occurred.
         """
         while True:
             # try to receive a message
@@ -38,13 +39,14 @@ class ServerConnection:
                 message = self._receiver.recv_string()
             except Exception as e:
                 print("ZMQ socket error: {}".format(e))
-                break
+                return False
             # split given message
             try:
                 client_id, data = message.split(',')
             except ValueError:
                 continue
-            if data == "exit":
+            if client_id == "0" and data == "exit":
                 break
             # call registered callback with given data
             message_callback(client_id, data)
+        return True
