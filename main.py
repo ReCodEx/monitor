@@ -8,18 +8,23 @@ from monitor.zeromq_connection import ServerConnection
 from monitor.config_manager import ConfigManager
 import asyncio
 import time
+import argparse
 
 
-def main(argv=None):
+def main():
     """
     Main function of monitor program.
-    :param argv: Parameters from command line. Not used
     :return: Nothing
     """
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', help="Path to configuration file", default=None)
+    args = parser.parse_args()
+
     # here we'll store all active connections
     connections = ClientConnections()
     # get configuration
-    config = ConfigManager()
+    config = ConfigManager(args.config)
     # create event loop for websocket server thread
     loop = asyncio.new_event_loop()
 

@@ -16,5 +16,5 @@ How to run it
 - install ``python3`` and ``pip`` according to your OS
 - install dependencies executing ``pip install -r requirements.txt``
 - run tests by ``python3 monitor/tests``
-- run app by ``python3 main.py``
+- run app by ``python3 main.py -c ./config.yml`` (without specifying configuration file default values will be used)
 

@@ -9,3 +9,7 @@ zmq
 websockets
 asyncio
 
+# Argument and configuration parsing
+yaml
+argparse
+

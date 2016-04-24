@@ -1,0 +1,10 @@
+---
+websocket_uri:
+    - "127.0.0.1"
+    - 4567
+zeromq_uri:
+    - "127.0.0.1"
+    - 7894
+logger_path:
+    "/tmp/recodex-monitor.log"
+...
