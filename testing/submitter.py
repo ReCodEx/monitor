@@ -15,5 +15,9 @@ try:
     while True:
         message = input("> ")
         zmq_socket.send_string(message)
+        if message == "0,exit":
+            break
 except KeyboardInterrupt:
+    pass
+finally:
     print("Quitting...")

@@ -5,10 +5,13 @@ Script which runs the monitor - tool for resending messages from ZeroMQ to WebSo
 
 from monitor.websocket_connections import ClientConnections, WebsocketServer
 from monitor.zeromq_connection import ServerConnection
-from monitor.config_manager import ConfigManager
+from monitor.config_manager import ConfigManager, init_logger
 import asyncio
-import time
 import argparse
+import logging
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', '--config', help="Path to configuration file", default=None)
 
 
 def main():
@@ -16,9 +19,6 @@ def main():
     Main function of monitor program.
     :return: Nothing
     """
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', help="Path to configuration file", default=None)
     args = parser.parse_args()
 
     # here we'll store all active connections
@@ -27,16 +27,21 @@ def main():
     config = ConfigManager(args.config)
     # create event loop for websocket server thread
     loop = asyncio.new_event_loop()
+    # get logger
+    logger = init_logger(*config.get_logger_settings())
 
     websock_server = None
     try:
+        logger.info("starting websocket server ...")
         # run websocket part of monitor in separate thread
-        websock_server = WebsocketServer(config.get_websocket_uri(), connections, loop)
+        websock_server = WebsocketServer(config.get_websocket_uri(), connections, loop, logger)
         websock_server.start()
-        time.sleep(1)  # wait for new thread to start and print URI
+        logger.info("websocket server started")
 
         # create zeromq connection
-        zmq_server = ServerConnection(*config.get_zeromq_uri())
+        logger.info("starting zeromq server ...")
+        zmq_uri = config.get_zeromq_uri()
+        zmq_server = ServerConnection(zmq_uri[0], zmq_uri[1], logger)
 
         # specify callback for zeromq incoming message
         def message_callback(client_id, data):
@@ -44,14 +49,18 @@ def main():
         # start zeromq server with given callback
         zmq_server.start(message_callback)
     except KeyboardInterrupt:
-        pass
+        logger.warning("keyboard interrupt detected")
     finally:
-        print("Quiting...")
+        logger.warning("quiting...")
         loop.call_soon_threadsafe(connections.remove_all_clients)
+        logger.debug("websocket clients removed")
         loop.call_soon_threadsafe(loop.stop)
+        logger.debug("websocket message loop stopped")
         if websock_server:
             websock_server.join()
+            logger.debug("websocket server thread exited")
         loop.close()
+        logger.debug("main thread exited")
 
 if __name__ == "__main__":
     main()

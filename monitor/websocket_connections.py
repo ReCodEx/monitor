@@ -94,7 +94,7 @@ class WebsocketServer(threading.Thread):
     finish, there is join() method (as in threading.Thread class).
     """
 
-    def __init__(self, websock_uri, connections, loop):
+    def __init__(self, websock_uri, connections, loop, logger):
         """
         Initialize new instance
         :param websock_uri: Tuple containing hostname and port for websocket server
@@ -102,15 +102,17 @@ class WebsocketServer(threading.Thread):
         sent messages from other threads. Note, that this must be invoked thread
         safe via given message loop of asyncio module.
         :param loop: Asyncio message loop for handling connections
+        :param logger: System logger instance
         """
         super().__init__()
         self._connections = connections
         self._loop = loop
+        self._logger = logger
         hostname, port = websock_uri
         asyncio.set_event_loop(loop)
         start_server = websockets.serve(self.connection_handler, hostname, port)
         loop.run_until_complete(start_server)
-        print("Server started on {}:{}".format(hostname, port))
+        self._logger.info("websocket server initialized at {}:{}".format(hostname, port))
 
     @asyncio.coroutine
     def connection_handler(self, websocket, path):
@@ -125,19 +127,22 @@ class WebsocketServer(threading.Thread):
         try:
             wanted_id = yield from websocket.recv()
             future = self._connections.add_client(wanted_id)
+            self._logger.debug("websocket server: got client for channel '{}'".format(wanted_id))
             yield from websocket.send("Connection established")
             while True:
                 # wait for message
                 yield from future
                 # get message and retrieve new future
                 result = future.result()
+                self._logger.debug("websocket server: message '{}' for channel '{}".format(result, wanted_id))
                 future = self._connections.update_future(wanted_id)
                 # send message to client
                 yield from websocket.send(result)
+                self._logger.debug("websocket server: message sent to channel '{}'".format(wanted_id))
         except websockets.ConnectionClosed:
-            print("WebSocket is closed")
+            self._logger.info("websocket server: connection closed for channel '{}'". format(wanted_id))
         except asyncio.CancelledError:
-            print("Connection cancelled")
+            self._logger.error("websocket server: connection cancelled for channel '{}'".format(wanted_id))
         finally:
             self._connections.remove_client(wanted_id)
 
