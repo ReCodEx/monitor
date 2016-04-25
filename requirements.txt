@@ -10,6 +10,6 @@ websockets
 asyncio
 
 # Argument and configuration parsing
-yaml
+pyyaml
 argparse
 
