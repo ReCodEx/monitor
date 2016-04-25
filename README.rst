@@ -1,6 +1,9 @@
 Monitor
 =======
 
+.. image:: https://travis-ci.org/ReCodEx/monitor.svg?branch=master
+    :target: https://travis-ci.org/ReCodEx/monitor
+
 .. image:: http://img.shields.io/:license-mit-blue.svg
    :target: http://badges.mit-license.org
 

@@ -1,0 +1,11 @@
+dist: trusty
+language: python
+python:
+    - "3.4"
+
+install:
+    - pip install --user -r requirements.txt
+
+script:
+    - python monitor/tests
+
