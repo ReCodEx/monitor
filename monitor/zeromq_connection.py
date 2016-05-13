@@ -23,7 +23,8 @@ class ServerConnection:
         """
         self._logger = logger
         context = zmq.Context()
-        self._receiver = context.socket(zmq.PULL)
+        self._receiver = context.socket(zmq.ROUTER)
+        self._receiver.setsockopt(zmq.IDENTITY, b"recodex-monitor")
         address = "tcp://{}:{}".format(address, port)
         self._receiver.bind(address)
         self._logger.info("zeromq server initialized at {}".format(address))
@@ -40,14 +41,22 @@ class ServerConnection:
         while True:
             # try to receive a message
             try:
-                message = self._receiver.recv_string()
+                message = self._receiver.recv_multipart()
                 self._logger.debug("zeromq server: got message '{}'".format(message))
             except Exception as e:
                 self._logger.error("zeromq server: socket error: {}".format(e))
                 return False
             # split given message
             try:
-                client_id, data = message.split(',')
+                """
+                decode the message with following parts:
+                    0 - zeromq identity of sender
+                    1 - byte array with channel id
+                    2 - byte array with message text
+                """
+                client_id = message[1].decode()
+                data = message[2].decode()
+                print("message {} with data {}".format(client_id, data))
             except ValueError:
                 continue
             if client_id == "0" and data == "exit":
