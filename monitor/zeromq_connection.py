@@ -16,8 +16,9 @@ class ServerConnection:
     def __init__(self, address, port, logger):
         """
         Initialize new instance with given address and port.
+
         :param address: String representation of IP address
-        to listen to or a hostname.
+            to listen to or a hostname.
         :param port: String port where to listen.
         :param logger: System logger
         """
@@ -32,11 +33,12 @@ class ServerConnection:
     def start(self, message_callback):
         """
         Start receiving messages from underlying zeromq socket.
+
         :param message_callback: Function to be called when new messages arrived.
-        This function should not block for long. Required are two parameters, first
-        is id of stream and second is text of the message. Both are strings.
+            This function should not block for long. Required are two parameters, first
+            is id of stream and second is text of the message. Both are strings.
         :return: True if exited normally (by "exit" message with ID 0), False if
-        socket error occurred.
+            socket error occurred.
         """
         while True:
             # try to receive a message
