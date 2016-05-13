@@ -17,7 +17,8 @@ class TestServerConnection(unittest.TestCase):
 
         ServerConnection("ip_address", 1025, logger)
         mock_context.assert_called_once_with()
-        mock_socket.socket.assert_called_once_with(zmq.PULL)
+        mock_socket.socket.assert_called_once_with(zmq.ROUTER)
+        mock_receiver.setsockopt.assert_called_once_with(zmq.IDENTITY, b"recodex-monitor")
         mock_receiver.bind.assert_called_once_with("tcp://ip_address:1025")
 
     @patch('zmq.Context')
@@ -30,7 +31,7 @@ class TestServerConnection(unittest.TestCase):
         mock_callback = MagicMock()
 
         server = ServerConnection("ip_address", 1025, logger)
-        mock_receiver.recv_string.side_effect = ["1234,message text", "0,exit"]
+        mock_receiver.recv_multipart.side_effect = [[b"id", b"1234", b"message text"], [b"id", b"0", b"exit"]]
         ret = server.start(mock_callback)
 
         self.assertTrue(ret)
@@ -46,7 +47,7 @@ class TestServerConnection(unittest.TestCase):
         mock_callback = MagicMock()
 
         server = ServerConnection("ip_address", 1025, logger)
-        mock_receiver.recv_string.side_effect = Exception
+        mock_receiver.recv_multipart.side_effect = Exception
         ret = server.start(mock_callback)
 
         self.assertFalse(ret)
