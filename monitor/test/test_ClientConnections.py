@@ -2,12 +2,14 @@
 
 import unittest
 import asyncio
+from unittest.mock import MagicMock
 from monitor.websocket_connections import ClientConnections
 
 
 class TestClientConnections(unittest.TestCase):
     def setUp(self):
-        self._connections = ClientConnections()
+        logger = MagicMock()
+        self._connections = ClientConnections(logger)
 
     def test_add_client(self):
         fut = self._connections.add_client("1234")

@@ -58,7 +58,6 @@ class ServerConnection:
                 """
                 client_id = message[1].decode()
                 data = message[2].decode()
-                print("message {} with data {}".format(client_id, data))
             except ValueError:
                 continue
             if client_id == "0" and data == "exit":

@@ -16,11 +16,12 @@ class ClientConnections:
     thread safe.
     """
 
-    def __init__(self):
+    def __init__(self, logger):
         """
         Initialize empty client dictionary
         """
         self._clients = dict()
+        self._logger = logger
 
     def add_client(self, id):
         """
@@ -33,6 +34,7 @@ class ClientConnections:
         """
         new_fut = asyncio.Future()
         self._clients[id] = new_fut
+        self._logger.debug("client connection: new client '{}' registered".format(id))
         return new_fut
 
     def update_future(self, id):
@@ -45,6 +47,7 @@ class ClientConnections:
         """
         new_fut = asyncio.Future()
         self._clients[id] = new_fut
+        self._logger.debug("client connection: future for client '{}' updated".format(id))
         return new_fut
 
     def remove_client(self, id):
@@ -59,6 +62,10 @@ class ClientConnections:
         if id in self._clients.keys():
             self._clients[id].cancel()
             del self._clients[id]
+            self._logger.debug("client connection: client '{}' removed".format(id))
+        else:
+            self._logger.debug("client connection: client '{}' removing failed - "
+                               " not present".format(id))
 
     def remove_all_clients(self):
         """
@@ -70,6 +77,7 @@ class ClientConnections:
         for future in self._clients.values():
             future.cancel()
         self._clients.clear()
+        self._logger.debug("client connection: all clients removed")
 
     def send_message(self, id, message):
         """
@@ -88,7 +96,12 @@ class ClientConnections:
                 return True
             else:
                 # we are under heavy workload, discard this message
-                pass
+                self._logger.warning("client connection: Dropping message '{}' for"
+                                     "stream '{}' because previous one was not yet"
+                                     "processed".format(message, id))
+        else:
+            self._logger.warning("client connection: Dropping message '{}' for"
+                                 "non-existing stream '{}'".format(message, id))
         return False
 
 
@@ -141,7 +154,7 @@ class WebsocketServer(threading.Thread):
                 yield from future
                 # get message and retrieve new future
                 result = future.result()
-                self._logger.debug("websocket server: message '{}' for channel '{}".format(result, wanted_id))
+                self._logger.debug("websocket server: message '{}' for channel '{}'".format(result, wanted_id))
                 future = self._connections.update_future(wanted_id)
                 # send message to client
                 yield from websocket.send(result)

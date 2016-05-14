@@ -8,7 +8,7 @@ from monitor.zeromq_connection import ServerConnection
 from monitor.config_manager import ConfigManager, init_logger
 import asyncio
 import argparse
-import logging
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', help="Path to configuration file", default=None)
@@ -21,14 +21,14 @@ def main():
     """
     args = parser.parse_args()
 
-    # here we'll store all active connections
-    connections = ClientConnections()
     # get configuration
     config = ConfigManager(args.config)
     # create event loop for websocket server thread
     loop = asyncio.new_event_loop()
     # get logger
     logger = init_logger(*config.get_logger_settings())
+    # here we'll store all active connections
+    connections = ClientConnections(logger)
 
     websock_server = None
     try:
