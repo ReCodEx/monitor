@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>monitor package &mdash; monitor 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="monitor 0.1.0 documentation" href="index.html" />
+    <link rel="up" title="monitor" href="modules.html" />
+    <link rel="next" title="monitor.test package" href="monitor.test.html" />
+    <link rel="prev" title="monitor" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="monitor-package">
+<h1>monitor package<a class="headerlink" href="#monitor-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="monitor.test.html">monitor.test package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="monitor.test.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitor.test.html#module-monitor.test.test_ClientConnections">monitor.test.test_ClientConnections module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitor.test.html#module-monitor.test.test_ConfigManager">monitor.test.test_ConfigManager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitor.test.html#module-monitor.test.test_ServerConnection">monitor.test.test_ServerConnection module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitor.test.html#module-monitor.test.test_websock_server">monitor.test.test_websock_server module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="monitor.test.html#module-monitor.test">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-monitor.config_manager">
+<span id="monitor-config-manager-module"></span><h2>monitor.config_manager module<a class="headerlink" href="#module-monitor.config_manager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="monitor.config_manager.ConfigManager">
+<em class="property">class </em><code class="descclassname">monitor.config_manager.</code><code class="descname">ConfigManager</code><span class="sig-paren">(</span><em>config_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/config_manager.html#ConfigManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.config_manager.ConfigManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class to handle all configuration items.</p>
+<dl class="method">
+<dt id="monitor.config_manager.ConfigManager.get_logger_settings">
+<code class="descname">get_logger_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/config_manager.html#ConfigManager.get_logger_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.config_manager.ConfigManager.get_logger_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get path to system log file.
+:return: List with 4 items - string path, logging level, integer maximum size
+of logfile and integer number of rotations kept.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="monitor.config_manager.ConfigManager.get_websocket_uri">
+<code class="descname">get_websocket_uri</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/config_manager.html#ConfigManager.get_websocket_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.config_manager.ConfigManager.get_websocket_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get address for websocket server.
+:return: List with 2 items - string hostname and int port</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="monitor.config_manager.ConfigManager.get_zeromq_uri">
+<code class="descname">get_zeromq_uri</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/config_manager.html#ConfigManager.get_zeromq_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.config_manager.ConfigManager.get_zeromq_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get address for zeromq server.
+:return: List with 2 items - string hostname and int port</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="monitor.config_manager.init_logger">
+<code class="descclassname">monitor.config_manager.</code><code class="descname">init_logger</code><span class="sig-paren">(</span><em>logfile</em>, <em>level</em>, <em>max_size</em>, <em>rotations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/config_manager.html#init_logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.config_manager.init_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize new system logger for monitor. If arguments are invalid,
+empty logger will be created.
+:param logfile: Path to file with log.
+:param level: Log level as logging.&lt;LEVEL&gt;
+:param max_size: Maximum size of log file.
+:param rotations: Number of log files kept.
+:return: Initialized logger.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-monitor.websocket_connections">
+<span id="monitor-websocket-connections-module"></span><h2>monitor.websocket_connections module<a class="headerlink" href="#module-monitor.websocket_connections" title="Permalink to this headline">¶</a></h2>
+<p>Classes and functions for websocket connections and message sending</p>
+<dl class="class">
+<dt id="monitor.websocket_connections.ClientConnections">
+<em class="property">class </em><code class="descclassname">monitor.websocket_connections.</code><code class="descname">ClientConnections</code><span class="sig-paren">(</span><em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Container for managing connected websocket clients. Messages are passed as
+asyncio.Future values, so all methods must be called from the same thread
+(event loop) as main websocket connection handler. Thus this class is not
+thread safe.</p>
+<dl class="method">
+<dt id="monitor.websocket_connections.ClientConnections.add_client">
+<code class="descname">add_client</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.add_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.add_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register new client which wants to receive messages to identifier &#8216;id&#8217;.
+Only one subscriber per stream is allowed. Latter overrides previous one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> &#8211; Identifier of required stream of messages</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns new asyncio.Future on which can be wait for by
+&#8216;yield from&#8217; command.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="monitor.websocket_connections.ClientConnections.remove_all_clients">
+<code class="descname">remove_all_clients</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.remove_all_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.remove_all_clients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all registered clients. This method could be called on app
+shutdown or when incoming connection is lost.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Nothing</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="monitor.websocket_connections.ClientConnections.remove_client">
+<code class="descname">remove_client</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.remove_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.remove_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove client listening on &#8216;id&#8217; message stream. This means cancelling
+underlying future and deleting the entry from internal dictionary.
+If no such client exists, nothing is done.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> &#8211; Identifier of required stream of messages</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="monitor.websocket_connections.ClientConnections.send_message">
+<code class="descname">send_message</code><span class="sig-paren">(</span><em>id</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.send_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send &#8216;message&#8217; to client listening on stream with &#8216;id&#8217;. If &#8216;id&#8217; is not
+known, the message is silently dropped. If last message to this &#8216;id&#8217; was
+not already sent, this message is also dropped to save resources.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id</strong> &#8211; Identifier of required stream of messages</li>
+<li><strong>message</strong> &#8211; String containing text to be sent</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns True if message was sent, False otherwise</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="monitor.websocket_connections.ClientConnections.update_future">
+<code class="descname">update_future</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.update_future"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.update_future" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update future for message stream with &#8216;id&#8217; identifier. This should be
+called after one message was sent (previous future was filled).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> &#8211; Identifier of required stream of messages</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returns new asyncio.Future</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="monitor.websocket_connections.WebsocketServer">
+<em class="property">class </em><code class="descclassname">monitor.websocket_connections.</code><code class="descname">WebsocketServer</code><span class="sig-paren">(</span><em>websock_uri</em>, <em>connections</em>, <em>loop</em>, <em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#WebsocketServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.WebsocketServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">threading.Thread</span></code></p>
+<p>Websocket server, which handles all connection asynchronously in one
+(separate) thread. To start server, call start() method, for waiting to
+finish, there is join() method (as in threading.Thread class).</p>
+<dl class="method">
+<dt id="monitor.websocket_connections.WebsocketServer.connection_handler">
+<code class="descname">connection_handler</code><span class="sig-paren">(</span><em>websocket</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#WebsocketServer.connection_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.WebsocketServer.connection_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal asyncio.coroutine function for handling one websocket request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>websocket</strong> &#8211; Socket with request</li>
+<li><strong>path</strong> &#8211; Requested path of socket (not used)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns when socket is closed or future from ClientConnections
+is cancelled.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="monitor.websocket_connections.WebsocketServer.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#WebsocketServer.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.WebsocketServer.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to start websocket server, which handle and serve all connections.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">This function returns when given message loop is stopped and returns
+nothing.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-monitor.zeromq_connection">
+<span id="monitor-zeromq-connection-module"></span><h2>monitor.zeromq_connection module<a class="headerlink" href="#module-monitor.zeromq_connection" title="Permalink to this headline">¶</a></h2>
+<p>Handle zeromq socket.</p>
+<dl class="class">
+<dt id="monitor.zeromq_connection.ServerConnection">
+<em class="property">class </em><code class="descclassname">monitor.zeromq_connection.</code><code class="descname">ServerConnection</code><span class="sig-paren">(</span><em>address</em>, <em>port</em>, <em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/zeromq_connection.html#ServerConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.zeromq_connection.ServerConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class responsible for creating zeromq socket (server) and receiving
+messages from connected clients. The message should be text with
+format &lt;ID&gt;,&lt;MESSAGE&gt;, where text &lt;MESSAGE&gt; will be sent to websocket
+client subscribed to channel &lt;ID&gt;.</p>
+<dl class="method">
+<dt id="monitor.zeromq_connection.ServerConnection.start">
+<code class="descname">start</code><span class="sig-paren">(</span><em>message_callback</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/zeromq_connection.html#ServerConnection.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.zeromq_connection.ServerConnection.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start receiving messages from underlying zeromq socket.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message_callback</strong> &#8211; Function to be called when new messages arrived.
+This function should not block for long. Required are two parameters, first
+is id of stream and second is text of the message. Both are strings.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if exited normally (by &#8220;exit&#8221; message with ID 0), False if
+socket error occurred.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-monitor">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-monitor" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">monitor package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-monitor.config_manager">monitor.config_manager module</a></li>
+<li><a class="reference internal" href="#module-monitor.websocket_connections">monitor.websocket_connections module</a></li>
+<li><a class="reference internal" href="#module-monitor.zeromq_connection">monitor.zeromq_connection module</a></li>
+<li><a class="reference internal" href="#module-monitor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">monitor</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">monitor</a></li>
+      <li>Next: <a href="monitor.test.html" title="next chapter">monitor.test package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/monitor.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, ReCodEx Team, Petr Stefan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/monitor.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

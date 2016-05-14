@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>monitor.test.test_ClientConnections &mdash; monitor 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="monitor 0.1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for monitor.test.test_ClientConnections</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span>
+<span class="kn">from</span> <span class="nn">monitor.websocket_connections</span> <span class="kn">import</span> <span class="n">ClientConnections</span>
+
+
+<div class="viewcode-block" id="TestClientConnections"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ClientConnections.TestClientConnections">[docs]</a><span class="k">class</span> <span class="nc">TestClientConnections</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClientConnections.setUp"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ClientConnections.TestClientConnections.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="n">ClientConnections</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClientConnections.test_add_client"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ClientConnections.TestClientConnections.test_add_client">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">fut</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s2">&quot;No future returned&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">fut</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">,</span> <span class="s2">&quot;Wrong type of returned value&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">fut</span><span class="o">.</span><span class="n">done</span><span class="p">(),</span> <span class="s2">&quot;Future is already filled&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">fut</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="s2">&quot;1234&quot;</span><span class="p">],</span>
+                         <span class="s2">&quot;Future not present at requested id&quot;</span><span class="p">)</span>
+        <span class="n">fut2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="s2">&quot;456777&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">fut</span><span class="p">,</span> <span class="n">fut2</span><span class="p">,</span> <span class="s2">&quot;Different clients have same future&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClientConnections.test_update_future"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ClientConnections.TestClientConnections.test_update_future">[docs]</a>    <span class="k">def</span> <span class="nf">test_update_future</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">prev_fut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
+        <span class="n">new_fut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">update_future</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">prev_fut</span><span class="p">,</span> <span class="n">new_fut</span><span class="p">,</span> <span class="s2">&quot;Updated future is not new&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">new_fut</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">,</span> <span class="s2">&quot;Wrong type of returned value&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">new_fut</span><span class="o">.</span><span class="n">done</span><span class="p">(),</span> <span class="s2">&quot;Future is already filled&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">new_fut</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="s2">&quot;1234&quot;</span><span class="p">],</span>
+                         <span class="s2">&quot;Future not present at requested id&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClientConnections.test_remove_client"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ClientConnections.TestClientConnections.test_remove_client">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_client</span><span class="p">(</span><span class="s2">&quot;4567&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">_clients</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Nonexisting client removed&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_client</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">_clients</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Existing client not removed&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">fut</span><span class="o">.</span><span class="n">cancelled</span><span class="p">(),</span> <span class="s2">&quot;Future not cancelled&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClientConnections.test_remove_all_clients"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ClientConnections.TestClientConnections.test_remove_all_clients">[docs]</a>    <span class="k">def</span> <span class="nf">test_remove_all_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fut1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
+        <span class="n">fut2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="s2">&quot;4567&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_all_clients</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">_clients</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Some clients left in collection&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">fut1</span><span class="o">.</span><span class="n">cancelled</span><span class="p">(),</span> <span class="s2">&quot;Future not cancelled&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">fut2</span><span class="o">.</span><span class="n">cancelled</span><span class="p">(),</span> <span class="s2">&quot;Future not cancelled&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_all_clients</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">_clients</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Some clients left in collection&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClientConnections.test_send_message"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ClientConnections.TestClientConnections.test_send_message">[docs]</a>    <span class="k">def</span> <span class="nf">test_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;testing message&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="s2">&quot;Message not sent&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">fut</span><span class="o">.</span><span class="n">done</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">fut</span><span class="o">.</span><span class="n">result</span><span class="p">(),</span> <span class="s2">&quot;testing message&quot;</span><span class="p">,</span> <span class="s2">&quot;Future result differs&quot;</span><span class="p">)</span>
+        <span class="n">ret2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">,</span> <span class="s2">&quot;msg two&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ret2</span><span class="p">,</span> <span class="s2">&quot;Message sent when future already filled&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">fut</span><span class="o">.</span><span class="n">result</span><span class="p">(),</span> <span class="s2">&quot;testing message&quot;</span><span class="p">,</span> <span class="s2">&quot;Future changed value&quot;</span><span class="p">)</span>
+        <span class="n">ret3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="s2">&quot;51236&quot;</span><span class="p">,</span> <span class="s2">&quot;random string&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">ret3</span><span class="p">,</span> <span class="s2">&quot;Message sent to nonexisting host id&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, ReCodEx Team, Petr Stefan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

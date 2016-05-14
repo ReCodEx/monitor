@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>monitor.test.test_ConfigManager &mdash; monitor 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="monitor 0.1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for monitor.test.test_ConfigManager</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">monitor.config_manager</span> <span class="kn">import</span> <span class="n">ConfigManager</span><span class="p">,</span> <span class="n">init_logger</span>
+
+
+<div class="viewcode-block" id="TestConfigManager"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager">[docs]</a><span class="k">class</span> <span class="nc">TestConfigManager</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestConfigManager.test_websock_uri_default"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager.test_websock_uri_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_websock_uri_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_websocket_uri</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">4567</span><span class="p">])</span>
+
+        <span class="c1"># wrong filename - using defaults</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="s1">&#39;/a/b/tmp/log.bla&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_websocket_uri</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">4567</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestConfigManager.test_websock_uri_loaded"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager.test_websock_uri_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">test_websock_uri_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">handle</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;websocket_uri:</span><span class="se">\n</span><span class="s1">  - 77.75.76.3</span><span class="se">\n</span><span class="s1">  - 8080&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_websocket_uri</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;77.75.76.3&quot;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">])</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestConfigManager.test_zeromq_uri_default"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager.test_zeromq_uri_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_zeromq_uri_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_zeromq_uri</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">7894</span><span class="p">])</span>
+
+        <span class="c1"># wrong filename - using defaults</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="s1">&#39;/a/b/tmp/log.bla&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_zeromq_uri</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">7894</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestConfigManager.test_zeromq_uri_loaded"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager.test_zeromq_uri_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">test_zeromq_uri_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">handle</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;zeromq_uri:</span><span class="se">\n</span><span class="s1">  - 77.75.76.3</span><span class="se">\n</span><span class="s1">  - 8080&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_zeromq_uri</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;77.75.76.3&quot;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">])</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestConfigManager.test_logger_path_default"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager.test_logger_path_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_logger_path_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_logger_settings</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;/tmp/recodex-monitor.log&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+        <span class="c1"># wrong filename - using defaults</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="s1">&#39;/a/b/tmp/log.bla&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_logger_settings</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;/tmp/recodex-monitor.log&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestConfigManager.test_logger_path_loaded"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager.test_logger_path_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">test_logger_path_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">handle</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;logger:</span><span class="se">\n</span><span class="s1">  file: /var/log/tmp/file.log</span><span class="se">\n</span><span class="s1">  level: &quot;debug&quot;</span><span class="se">\n</span><span class="s1">  max-size: 564</span><span class="se">\n</span><span class="s1">  rotations: 7&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_logger_settings</span><span class="p">(),</span> <span class="p">[</span><span class="s2">&quot;/var/log/tmp/file.log&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="mi">564</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestConfigManager.test_loglevel_from_string"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestConfigManager.test_loglevel_from_string">[docs]</a>    <span class="k">def</span> <span class="nf">test_loglevel_from_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">_get_loglevel_from_string</span><span class="p">(</span><span class="s2">&quot;debug&quot;</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">_get_loglevel_from_string</span><span class="p">(</span><span class="s2">&quot;info&quot;</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">_get_loglevel_from_string</span><span class="p">(</span><span class="s2">&quot;warning&quot;</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">_get_loglevel_from_string</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">_get_loglevel_from_string</span><span class="p">(</span><span class="s2">&quot;critical&quot;</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">_get_loglevel_from_string</span><span class="p">(</span><span class="s2">&quot;nonexisting&quot;</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestLoggerInitialization"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestLoggerInitialization">[docs]</a><span class="k">class</span> <span class="nc">TestLoggerInitialization</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestLoggerInitialization.test_invalid_path"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestLoggerInitialization.test_invalid_path">[docs]</a>    <span class="k">def</span> <span class="nf">test_invalid_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="s2">&quot;/a/b/c.txt&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">))</span>
+        <span class="c1"># restore global logging</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestLoggerInitialization.test_valid_creation"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_ConfigManager.TestLoggerInitialization.test_valid_creation">[docs]</a>    <span class="k">def</span> <span class="nf">test_valid_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">handle</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span> <span class="mi">450</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;aaa&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;bbb&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ccc&quot;</span><span class="p">)</span>
+        <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">(),</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="c1"># expect 5 lines - 3 of header and one with &#39;bbb&#39; and one &#39;ccc&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, ReCodEx Team, Petr Stefan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

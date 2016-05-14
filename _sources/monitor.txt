@@ -1,0 +1,45 @@
+monitor package
+===============
+
+Subpackages
+-----------
+
+.. toctree::
+
+    monitor.test
+
+Submodules
+----------
+
+monitor.config_manager module
+-----------------------------
+
+.. automodule:: monitor.config_manager
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+monitor.websocket_connections module
+------------------------------------
+
+.. automodule:: monitor.websocket_connections
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+monitor.zeromq_connection module
+--------------------------------
+
+.. automodule:: monitor.zeromq_connection
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: monitor
+    :members:
+    :undoc-members:
+    :show-inheritance:

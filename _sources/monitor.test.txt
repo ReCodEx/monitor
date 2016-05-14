@@ -1,0 +1,46 @@
+monitor.test package
+====================
+
+Submodules
+----------
+
+monitor.test.test_ClientConnections module
+------------------------------------------
+
+.. automodule:: monitor.test.test_ClientConnections
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+monitor.test.test_ConfigManager module
+--------------------------------------
+
+.. automodule:: monitor.test.test_ConfigManager
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+monitor.test.test_ServerConnection module
+-----------------------------------------
+
+.. automodule:: monitor.test.test_ServerConnection
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+monitor.test.test_websock_server module
+---------------------------------------
+
+.. automodule:: monitor.test.test_websock_server
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: monitor.test
+    :members:
+    :undoc-members:
+    :show-inheritance:
