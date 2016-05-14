@@ -114,6 +114,7 @@ def init_logger(logfile, level, max_size, rotations):
         # create empty logger
         print("Invalid logger configuration. Creating null logger. Error: {}".format(e))
         logger = logging.getLogger('recodex-monitor-dummy')
+        logging.disable(logging.CRITICAL)
 
     # print welcome message to log file
     logger.critical("-------------------------")
