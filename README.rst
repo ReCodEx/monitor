@@ -10,6 +10,8 @@ Monitor
 .. image:: https://img.shields.io/badge/docs-wiki-orange.svg
    :target: https://github.com/ReCodEx/GlobalWiki/wiki
 
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
+   :target: http://recodex.github.io/monitor/
 
 A daemon that reads status messages of all running job evaluations from one ZeroMQ socket and send them to proper WebSocket connection.
 
