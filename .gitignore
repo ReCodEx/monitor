@@ -1,8 +1,12 @@
 *.pyc
 __pycache__
 .idea/
+build/
+dist/
+recodex_monitor.egg-info/
 docs/*
 !docs/index.rst
 !docs/Makefile
 !docs/conf.py
+MANIFEST
 

@@ -1,19 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from setuptools import setup
-
 from monitor import __version__
 
 
-def readme():
-    with open('README.rst') as f:
-        return f.read()
-
-
-setup(name='monitor',
+setup(name='recodex-monitor',
       version=__version__,
       description='Publish ZeroMQ messages through WebSockets',
-      long_description=readme(),
       author='Petr Stefan',
       author_email='',
       url='https://github.com/ReCodEx/monitor',
@@ -22,9 +15,16 @@ setup(name='monitor',
       classifiers=["Development Status :: 3 - Alpha",
                    "Intended Audience :: Developers",
                    "License :: OSI Approved :: MIT License",
-                   "Operating System :: OS Independent",
+                   'Operating System :: POSIX :: Linux',
                    "Programming Language :: Python",
                    "Programming Language :: Python :: 3",
-                   "Programming Language :: Python :: 3.4"],
+                   "Programming Language :: Python :: 3.4",
+                   "Programming Language :: Python :: 3.5"],
       packages=['monitor'],
-      entry_points={'console_scripts': ['recodex-monitor = monitor.main:main']})
+      package_data={'': ['../install/*']},
+      data_files=[
+          ('/etc/systemd/system', ['install/recodex-monitor.service']),
+          ('/etc/recodex/monitor', ['install/config.yml'])
+          ],
+      entry_points={'console_scripts': ['recodex-monitor = monitor.main:main']}
+      )
