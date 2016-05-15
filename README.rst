@@ -29,6 +29,7 @@ Installation
 ------------
 
 **Fedora (and other RPM distributions)**:
+
 - run ``python3 setup.py bdist_rpm --post-install ./install/postints`` to generate binary ``.rpm`` package
 - install package using ``sudo dnf install ./dist/recodex-monitor-0.1.0-1.noarch.rpm`` (depends on actual version)
 - edit configuration file located in ``/etc/recodex/monitor/`` directory
