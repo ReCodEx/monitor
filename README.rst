@@ -28,10 +28,20 @@ How to run it
 Installation
 ------------
 
-**Fedora (and other RPM distributions)**:
+**Fedora (and other RPM distributions):**
 
-- run ``python3 setup.py bdist_rpm --post-install ./install/postints`` to generate binary ``.rpm`` package
+- run ``python3 setup.py bdist_rpm --post-install ./install/postints`` to generate binary ``.rpm`` package **or** download it from releases tab
 - install package using ``sudo dnf install ./dist/recodex-monitor-0.1.0-1.noarch.rpm`` (depends on actual version)
-- edit configuration file located in ``/etc/recodex/monitor/`` directory
-- run via systemd script as ``sudo systemctl start recodex-monitor.service`` and ``sudo systemctl stop recodex-monitor.service``
+
+**Other Linux systems:**
+
+- run installation as ``python3 setup.py install``
+- run postinst script as root -  ``sudo ./install/postinst``
+
+
+Configuration and running
+-------------------------
+
+- edit configuration file ``/etc/recodex/monitor/config.yml``
+- run as systemd service via ``sudo systemctl start recodex-monitor.service`` **or** from command line as ``recodex-monitor -c /etc/recodex/monitor/config.yml``
 
