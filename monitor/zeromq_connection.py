@@ -4,6 +4,7 @@ Handle zeromq socket.
 """
 
 import zmq
+import json
 
 
 class ServerConnection:
@@ -54,10 +55,14 @@ class ServerConnection:
                 decode the message with following parts:
                     0 - zeromq identity of sender
                     1 - byte array with channel id
-                    2 - byte array with message text
+                    2 - byte array with message command
+                    3 - byte array with message task_id - only for TASK command
+                    4 - byte array with message task_state - only for TASK command
                 """
-                client_id = message[1].decode()
-                data = message[2].decode()
+                decoded_message = [item.decode() for item in message[1:]]
+                client_id = decoded_message[0]
+                keys = ["command", "task_id", "task_state"]
+                data = json.dumps(dict(zip(keys, decoded_message[1:])), sort_keys=True)
             except ValueError:
                 continue
             if client_id == "0" and data == "exit":

@@ -96,11 +96,11 @@ class ClientConnections:
                 return True
             else:
                 # we are under heavy workload, discard this message
-                self._logger.warning("client connection: Dropping message '{}' for"
-                                     "stream '{}' because previous one was not yet"
+                self._logger.warning("client connection: Dropping message '{}' for "
+                                     "stream '{}' because previous one was not yet "
                                      "processed".format(message, id))
         else:
-            self._logger.warning("client connection: Dropping message '{}' for"
+            self._logger.warning("client connection: Dropping message '{}' for "
                                  "non-existing stream '{}'".format(message, id))
         return False
 
