@@ -22,7 +22,7 @@ How to run it
 - install ``python3`` and ``pip`` according to your OS
 - install dependencies executing ``pip install -r requirements.txt``
 - run tests by ``python3 monitor/test``
-- run app by ``python3 monitor/main.py -c ./install/config.yml`` (without specifying configuration file default values will be used)
+- run app by ``python3 ./main.py -c ./install/config.yml`` (without specifying configuration file default values will be used)
 
 
 Installation

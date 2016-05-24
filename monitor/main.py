@@ -3,9 +3,9 @@
 Script which runs the monitor - tool for resending messages from ZeroMQ to WebSockets.
 """
 
-from monitor.websocket_connections import ClientConnections, WebsocketServer
-from monitor.zeromq_connection import ServerConnection
-from monitor.config_manager import ConfigManager, init_logger
+from .websocket_connections import ClientConnections, WebsocketServer
+from .zeromq_connection import ServerConnection
+from .config_manager import ConfigManager, init_logger
 import asyncio
 import argparse
 

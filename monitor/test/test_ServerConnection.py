@@ -31,11 +31,13 @@ class TestServerConnection(unittest.TestCase):
         mock_callback = MagicMock()
 
         server = ServerConnection("ip_address", 1025, logger)
-        mock_receiver.recv_multipart.side_effect = [[b"id", b"1234", b"message text"], [b"id", b"0", b"exit"]]
+        mock_receiver.recv_multipart.side_effect = [[b"id", b"1234", b"command text", b"task id text",
+                                                     b"task state text"], [b"id", b"0", b"exit"]]
         ret = server.start(mock_callback)
 
         self.assertTrue(ret)
-        mock_callback.assert_called_once_with("1234", "message text")
+        mock_callback.assert_called_once_with("1234", '{"command": "command text", "task_id": "task id text", '
+                                              '"task_state": "task state text"}')
 
     @patch('zmq.Context')
     def test_start_socket_error(self, mock_context):

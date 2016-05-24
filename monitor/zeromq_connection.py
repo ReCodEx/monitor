@@ -65,7 +65,7 @@ class ServerConnection:
                 data = json.dumps(dict(zip(keys, decoded_message[1:])), sort_keys=True)
             except ValueError:
                 continue
-            if client_id == "0" and data == "exit":
+            if client_id == "0" and data == '{"command": "exit"}':
                 self._logger.info("zeromq server: got shutdown command")
                 break
             # call registered callback with given data
