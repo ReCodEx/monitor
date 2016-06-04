@@ -11,7 +11,7 @@ import threading
 class ClientConnections:
     """
     Container for managing connected websocket clients. Messages are passed as
-    asyncio.Future values, so all methods must be called from the same thread
+    asyncio.Queue item values, so all methods must be called from the same thread
     (event loop) as main websocket connection handler. Thus this class is not
     thread safe.
     """
@@ -29,38 +29,24 @@ class ClientConnections:
         Only one subscriber per stream is allowed. Latter overrides previous one.
 
         :param id: Identifier of required stream of messages
-        :return: Returns new asyncio.Future on which can be wait for by
+        :return: Returns new asyncio.Queue on which can be wait for by
             'yield from' command.
         """
-        new_fut = asyncio.Future()
-        self._clients[id] = new_fut
+        new_queue = asyncio.Queue()
+        self._clients[id] = new_queue
         self._logger.debug("client connection: new client '{}' registered".format(id))
-        return new_fut
-
-    def update_future(self, id):
-        """
-        Update future for message stream with 'id' identifier. This should be
-        called after one message was sent (previous future was filled).
-
-        :param id: Identifier of required stream of messages
-        :return: Returns new asyncio.Future
-        """
-        new_fut = asyncio.Future()
-        self._clients[id] = new_fut
-        self._logger.debug("client connection: future for client '{}' updated".format(id))
-        return new_fut
+        return new_queue
 
     def remove_client(self, id):
         """
-        Remove client listening on 'id' message stream. This means cancelling
-        underlying future and deleting the entry from internal dictionary.
+        Remove client listening on 'id' message stream. This means removing associated
+        queue and deleting the entry from internal dictionary.
         If no such client exists, nothing is done.
 
         :param id: Identifier of required stream of messages
         :return: Nothing
         """
         if id in self._clients.keys():
-            self._clients[id].cancel()
             del self._clients[id]
             self._logger.debug("client connection: client '{}' removed".format(id))
         else:
@@ -74,31 +60,23 @@ class ClientConnections:
 
         :return: Nothing
         """
-        for future in self._clients.values():
-            future.cancel()
         self._clients.clear()
         self._logger.debug("client connection: all clients removed")
 
     def send_message(self, id, message):
         """
         Send 'message' to client listening on stream with 'id'. If 'id' is not
-        known, the message is silently dropped. If last message to this 'id' was
-        not already sent, this message is also dropped to save resources.
+        known, the message is silently dropped. The message is put into queue,
+        so no message will get lost.
 
         :param id: Identifier of required stream of messages
         :param message: String containing text to be sent
         :return: Returns True if message was sent, False otherwise
         """
         if id in self._clients.keys():
-            fut = self._clients[id]
-            if not fut.done():
-                fut.set_result(message)
-                return True
-            else:
-                # we are under heavy workload, discard this message
-                self._logger.warning("client connection: Dropping message '{}' for "
-                                     "stream '{}' because previous one was not yet "
-                                     "processed".format(message, id))
+            queue = self._clients[id]
+            queue.put_nowait(message)
+            return True
         else:
             self._logger.warning("client connection: Dropping message '{}' for "
                                  "non-existing stream '{}'".format(message, id))
@@ -146,23 +124,20 @@ class WebsocketServer(threading.Thread):
         wanted_id = None
         try:
             wanted_id = yield from websocket.recv()
-            future = self._connections.add_client(wanted_id)
+            queue = self._connections.add_client(wanted_id)
             self._logger.debug("websocket server: got client for channel '{}'".format(wanted_id))
             yield from websocket.send("Connection established")
             while True:
                 # wait for message
-                yield from future
-                # get message and retrieve new future
-                result = future.result()
+                result = yield from queue.get()
+                if not result:
+                    break
                 self._logger.debug("websocket server: message '{}' for channel '{}'".format(result, wanted_id))
-                future = self._connections.update_future(wanted_id)
                 # send message to client
                 yield from websocket.send(result)
                 self._logger.debug("websocket server: message sent to channel '{}'".format(wanted_id))
         except websockets.ConnectionClosed:
             self._logger.info("websocket server: connection closed for channel '{}'". format(wanted_id))
-        except asyncio.CancelledError:
-            self._logger.error("websocket server: connection cancelled for channel '{}'".format(wanted_id))
         finally:
             self._connections.remove_client(wanted_id)
 
