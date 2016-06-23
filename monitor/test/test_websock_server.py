@@ -46,7 +46,7 @@ class TestWebsocketServer(unittest.TestCase):
 
         # test the constraints
         websocket_mock.recv.assert_called_once_with()
-        self.assertEqual(websocket_mock.send.mock_calls, [call('Connection established'), call('result text')])
+        websocket_mock.send.assert_called_once_with('result text')
         connection_mock.add_client.assert_called_once_with("1234")
         connection_mock.remove_client.assert_called_once_with("1234")
 

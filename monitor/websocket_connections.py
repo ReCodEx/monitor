@@ -126,7 +126,6 @@ class WebsocketServer(threading.Thread):
             wanted_id = yield from websocket.recv()
             queue = self._connections.add_client(wanted_id)
             self._logger.debug("websocket server: got client for channel '{}'".format(wanted_id))
-            yield from websocket.send("Connection established")
             while True:
                 # wait for message
                 result = yield from queue.get()
