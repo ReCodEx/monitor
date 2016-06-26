@@ -30,12 +30,12 @@ Installation
 
 **Fedora (and other RPM distributions):**
 
-- run ``python3 setup.py bdist_rpm --post-install ./install/postints`` to generate binary ``.rpm`` package **or** download it from releases tab
+- run ``python3 setup.py bdist_rpm --post-install ./install/postints`` to generate binary ``.rpm`` package **or** download it from releases tab on GitHub
 - install package using ``sudo dnf install ./dist/recodex-monitor-0.1.0-1.noarch.rpm`` (depends on actual version)
 
 **Other Linux systems:**
 
-- run installation as ``python3 setup.py install``
+- run installation as ``python3 setup.py install --install-scripts /usr/bin``
 - run postinst script as root -  ``sudo ./install/postinst``
 
 
