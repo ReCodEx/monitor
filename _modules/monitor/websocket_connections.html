@@ -53,7 +53,7 @@
 <div class="viewcode-block" id="ClientConnections"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections">[docs]</a><span class="k">class</span> <span class="nc">ClientConnections</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for managing connected websocket clients. Messages are passed as</span>
-<span class="sd">    asyncio.Future values, so all methods must be called from the same thread</span>
+<span class="sd">    asyncio.Queue item values, so all methods must be called from the same thread</span>
 <span class="sd">    (event loop) as main websocket connection handler. Thus this class is not</span>
 <span class="sd">    thread safe.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -71,38 +71,24 @@
 <span class="sd">        Only one subscriber per stream is allowed. Latter overrides previous one.</span>
 
 <span class="sd">        :param id: Identifier of required stream of messages</span>
-<span class="sd">        :return: Returns new asyncio.Future on which can be wait for by</span>
+<span class="sd">        :return: Returns new asyncio.Queue on which can be wait for by</span>
 <span class="sd">            &#39;yield from&#39; command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_fut</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_fut</span>
+        <span class="n">new_queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_queue</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: new client &#39;{}&#39; registered&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_fut</span></div>
-
-<div class="viewcode-block" id="ClientConnections.update_future"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.update_future">[docs]</a>    <span class="k">def</span> <span class="nf">update_future</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update future for message stream with &#39;id&#39; identifier. This should be</span>
-<span class="sd">        called after one message was sent (previous future was filled).</span>
-
-<span class="sd">        :param id: Identifier of required stream of messages</span>
-<span class="sd">        :return: Returns new asyncio.Future</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_fut</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_fut</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: future for client &#39;{}&#39; updated&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_fut</span></div>
+        <span class="k">return</span> <span class="n">new_queue</span></div>
 
 <div class="viewcode-block" id="ClientConnections.remove_client"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.remove_client">[docs]</a>    <span class="k">def</span> <span class="nf">remove_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove client listening on &#39;id&#39; message stream. This means cancelling</span>
-<span class="sd">        underlying future and deleting the entry from internal dictionary.</span>
+<span class="sd">        Remove client listening on &#39;id&#39; message stream. This means removing associated</span>
+<span class="sd">        queue and deleting the entry from internal dictionary.</span>
 <span class="sd">        If no such client exists, nothing is done.</span>
 
 <span class="sd">        :param id: Identifier of required stream of messages</span>
 <span class="sd">        :return: Nothing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: client &#39;{}&#39; removed&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -116,33 +102,25 @@
 
 <span class="sd">        :return: Nothing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">future</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: all clients removed&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ClientConnections.send_message"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send &#39;message&#39; to client listening on stream with &#39;id&#39;. If &#39;id&#39; is not</span>
-<span class="sd">        known, the message is silently dropped. If last message to this &#39;id&#39; was</span>
-<span class="sd">        not already sent, this message is also dropped to save resources.</span>
+<span class="sd">        known, the message is silently dropped. The message is put into queue,</span>
+<span class="sd">        so no message will get lost.</span>
 
 <span class="sd">        :param id: Identifier of required stream of messages</span>
 <span class="sd">        :param message: String containing text to be sent</span>
 <span class="sd">        :return: Returns True if message was sent, False otherwise</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">fut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">fut</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
-                <span class="n">fut</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># we are under heavy workload, discard this message</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;client connection: Dropping message &#39;{}&#39; for&quot;</span>
-                                     <span class="s2">&quot;stream &#39;{}&#39; because previous one was not yet&quot;</span>
-                                     <span class="s2">&quot;processed&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="nb">id</span><span class="p">))</span>
+            <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+            <span class="n">queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;client connection: Dropping message &#39;{}&#39; for&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;client connection: Dropping message &#39;{}&#39; for &quot;</span>
                                  <span class="s2">&quot;non-existing stream &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="nb">id</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">False</span></div></div>
 
@@ -188,23 +166,19 @@
         <span class="n">wanted_id</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">wanted_id</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
-            <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">)</span>
+            <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">add_client</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;websocket server: got client for channel &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">))</span>
-            <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Connection established&quot;</span><span class="p">)</span>
             <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
                 <span class="c1"># wait for message</span>
-                <span class="k">yield from</span> <span class="n">future</span>
-                <span class="c1"># get message and retrieve new future</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="k">break</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;websocket server: message &#39;{}&#39; for channel &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">wanted_id</span><span class="p">))</span>
-                <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">update_future</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">)</span>
                 <span class="c1"># send message to client</span>
                 <span class="k">yield from</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;websocket server: message sent to channel &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">websockets</span><span class="o">.</span><span class="n">ConnectionClosed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;websocket server: connection closed for channel &#39;{}&#39;&quot;</span><span class="o">.</span> <span class="n">format</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">))</span>
-        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;websocket server: connection cancelled for channel &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">))</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_client</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">)</span></div>
 
@@ -236,8 +210,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -251,7 +225,7 @@
       &copy;2016, ReCodEx Team, Petr Stefan.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
       
     </div>

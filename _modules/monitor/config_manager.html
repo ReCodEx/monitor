@@ -54,8 +54,9 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Init with default values.</span>
+
 <span class="sd">        :param config_file: Path to YAML configuration file.</span>
-<span class="sd">        If not given, default values are used.</span>
+<span class="sd">            If not given, default values are used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -70,6 +71,7 @@
 <div class="viewcode-block" id="ConfigManager.get_websocket_uri"><a class="viewcode-back" href="../../monitor.html#monitor.config_manager.ConfigManager.get_websocket_uri">[docs]</a>    <span class="k">def</span> <span class="nf">get_websocket_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get address for websocket server.</span>
+
 <span class="sd">        :return: List with 2 items - string hostname and int port</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;websocket_uri&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;websocket_uri&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">4567</span><span class="p">]</span></div>
@@ -77,6 +79,7 @@
 <div class="viewcode-block" id="ConfigManager.get_zeromq_uri"><a class="viewcode-back" href="../../monitor.html#monitor.config_manager.ConfigManager.get_zeromq_uri">[docs]</a>    <span class="k">def</span> <span class="nf">get_zeromq_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get address for zeromq server.</span>
+
 <span class="sd">        :return: List with 2 items - string hostname and int port</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">[</span><span class="s1">&#39;zeromq_uri&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;zeromq_uri&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">7894</span><span class="p">]</span></div>
@@ -84,8 +87,9 @@
 <div class="viewcode-block" id="ConfigManager.get_logger_settings"><a class="viewcode-back" href="../../monitor.html#monitor.config_manager.ConfigManager.get_logger_settings">[docs]</a>    <span class="k">def</span> <span class="nf">get_logger_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get path to system log file.</span>
+
 <span class="sd">        :return: List with 4 items - string path, logging level, integer maximum size</span>
-<span class="sd">        of logfile and integer number of rotations kept.</span>
+<span class="sd">            of logfile and integer number of rotations kept.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/tmp/recodex-monitor.log&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
         <span class="k">if</span> <span class="s1">&#39;logger&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">:</span>
@@ -109,6 +113,7 @@
     <span class="k">def</span> <span class="nf">_get_loglevel_from_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_level</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert logging level from string to logging module type.</span>
+
 <span class="sd">        :param str_level: string representation of logging level</span>
 <span class="sd">        :return: logging level (defaults to logging.INFO)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -129,6 +134,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize new system logger for monitor. If arguments are invalid,</span>
 <span class="sd">    empty logger will be created.</span>
+
 <span class="sd">    :param logfile: Path to file with log.</span>
 <span class="sd">    :param level: Log level as logging.&lt;LEVEL&gt;</span>
 <span class="sd">    :param max_size: Maximum size of log file.</span>
@@ -183,8 +189,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -198,7 +204,7 @@
       &copy;2016, ReCodEx Team, Petr Stefan.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
       
     </div>

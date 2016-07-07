@@ -19,6 +19,14 @@ monitor.config_manager module
     :undoc-members:
     :show-inheritance:
 
+monitor.main module
+-------------------
+
+.. automodule:: monitor.main
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 monitor.websocket_connections module
 ------------------------------------
 

@@ -65,12 +65,10 @@
         <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;0101&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TestWebsocketServer.test_connection_handler"><a class="viewcode-back" href="../../../monitor.test.html#monitor.test.test_websock_server.TestWebsocketServer.test_connection_handler">[docs]</a>    <span class="k">def</span> <span class="nf">test_connection_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">first_future</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">()</span>
-        <span class="n">second_future</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">()</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
         <span class="n">connection_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
-        <span class="n">connection_mock</span><span class="o">.</span><span class="n">add_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">first_future</span>
-        <span class="n">connection_mock</span><span class="o">.</span><span class="n">update_future</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">second_future</span>
+        <span class="n">connection_mock</span><span class="o">.</span><span class="n">add_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">queue</span>
         <span class="n">connection_mock</span><span class="o">.</span><span class="n">remove_client</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="n">websocket_mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
@@ -81,8 +79,8 @@
         <span class="n">websocket_mock</span><span class="o">.</span><span class="n">send</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
 
         <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
-        <span class="n">first_future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="s2">&quot;result text&quot;</span><span class="p">)</span>
-        <span class="n">second_future</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="s2">&quot;result text&quot;</span><span class="p">)</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
 
         <span class="n">websock_server</span> <span class="o">=</span> <span class="n">WebsocketServer</span><span class="p">((</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">11111</span><span class="p">),</span> <span class="n">connection_mock</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
         <span class="c1"># actually call the method</span>
@@ -90,9 +88,8 @@
 
         <span class="c1"># test the constraints</span>
         <span class="n">websocket_mock</span><span class="o">.</span><span class="n">recv</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">websocket_mock</span><span class="o">.</span><span class="n">send</span><span class="o">.</span><span class="n">mock_calls</span><span class="p">,</span> <span class="p">[</span><span class="n">call</span><span class="p">(</span><span class="s1">&#39;Connection established&#39;</span><span class="p">),</span> <span class="n">call</span><span class="p">(</span><span class="s1">&#39;result text&#39;</span><span class="p">)])</span>
+        <span class="n">websocket_mock</span><span class="o">.</span><span class="n">send</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s1">&#39;result text&#39;</span><span class="p">)</span>
         <span class="n">connection_mock</span><span class="o">.</span><span class="n">add_client</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
-        <span class="n">connection_mock</span><span class="o">.</span><span class="n">update_future</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span>
         <span class="n">connection_mock</span><span class="o">.</span><span class="n">remove_client</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="s2">&quot;1234&quot;</span><span class="p">)</span></div>
 
     <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;asyncio.set_event_loop&#39;</span><span class="p">)</span>
@@ -121,8 +118,8 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
@@ -136,7 +133,7 @@
       &copy;2016, ReCodEx Team, Petr Stefan.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
       
     </div>
