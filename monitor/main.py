@@ -17,6 +17,7 @@ parser.add_argument('-c', '--config', help="Path to configuration file", default
 def main():
     """
     Main function of monitor program.
+
     :return: Nothing
     """
     args = parser.parse_args()
