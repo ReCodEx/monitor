@@ -22,7 +22,7 @@ How to run it
 - install ``python3`` and ``pip`` according to your OS
 - install dependencies executing ``pip install -r requirements.txt``
 - run tests by ``python3 monitor/test``
-- run app by ``python3 ./main.py -c ./install/config.yml`` (without specifying configuration file default values will be used)
+- run app by ``python3 ./main.py -c ./monitor/install/config.yml`` (without specifying configuration file default values will be used)
 
 
 Installation
@@ -30,13 +30,13 @@ Installation
 
 **Fedora (and other RPM distributions):**
 
-- run ``python3 setup.py bdist_rpm --post-install ./install/postints`` to generate binary ``.rpm`` package **or** download it from releases tab on GitHub
+- run ``python3 setup.py bdist_rpm --post-install ./monitor/install/postints`` to generate binary ``.rpm`` package **or** download it from releases tab on GitHub
 - install package using ``sudo dnf install ./dist/recodex-monitor-0.1.0-1.noarch.rpm`` (depends on actual version)
 
 **Other Linux systems:**
 
 - run installation as ``python3 setup.py install --install-scripts /usr/bin``
-- run postinst script as root -  ``sudo ./install/postinst``
+- run postinst script as root -  ``sudo ./monitor/install/postinst``
 
 
 Configuration and running

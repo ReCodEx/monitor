@@ -21,10 +21,10 @@ setup(name='recodex-monitor',
                    "Programming Language :: Python :: 3.4",
                    "Programming Language :: Python :: 3.5"],
       packages=['monitor'],
-      package_data={'': ['../install/*']},
+      package_data={'': ['./install/*']},
       data_files=[
-          ('/etc/systemd/system', ['install/recodex-monitor.service']),
-          ('/etc/recodex/monitor', ['install/config.yml'])
+          ('/etc/systemd/system', ['monitor/install/recodex-monitor.service']),
+          ('/etc/recodex/monitor', ['monitor/install/config.yml'])
           ],
       entry_points={'console_scripts': ['recodex-monitor = monitor.main:main']}
       )
