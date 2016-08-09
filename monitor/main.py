@@ -29,7 +29,7 @@ def main():
     # get logger
     logger = init_logger(*config.get_logger_settings())
     # here we'll store all active connections
-    connections = ClientConnections(logger)
+    connections = ClientConnections(logger, loop)
 
     websock_server = None
     try:

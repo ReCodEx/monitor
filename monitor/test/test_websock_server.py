@@ -48,7 +48,7 @@ class TestWebsocketServer(unittest.TestCase):
         websocket_mock.recv.assert_called_once_with()
         websocket_mock.send.assert_called_once_with('result text')
         connection_mock.add_client.assert_called_once_with("1234")
-        connection_mock.remove_client.assert_called_once_with("1234")
+        connection_mock.remove_client.assert_called_once_with("1234", queue)
 
     @patch('asyncio.set_event_loop')
     def test_run(self, mock_set_loop):

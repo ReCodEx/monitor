@@ -70,4 +70,9 @@ class ServerConnection:
                 break
             # call registered callback with given data
             message_callback(client_id, data)
+
+            # after last message (command FINISHED) send also poison pill
+            # to close listening sockets
+            if decoded_message[1] == "FINISHED":
+                message_callback(client_id, None)
         return True
