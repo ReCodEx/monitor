@@ -8,7 +8,7 @@ Monitor
    :target: http://badges.mit-license.org
 
 .. image:: https://img.shields.io/badge/docs-wiki-orange.svg
-   :target: https://github.com/ReCodEx/GlobalWiki/wiki
+   :target: https://github.com/ReCodEx/wiki/wiki
 
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
    :target: http://recodex.github.io/monitor/
