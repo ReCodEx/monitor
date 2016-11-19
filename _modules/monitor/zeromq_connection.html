@@ -112,6 +112,11 @@
                 <span class="k">break</span>
             <span class="c1"># call registered callback with given data</span>
             <span class="n">message_callback</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># after last message (command FINISHED) send also poison pill</span>
+            <span class="c1"># to close listening sockets</span>
+            <span class="k">if</span> <span class="n">decoded_message</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FINISHED&quot;</span><span class="p">:</span>
+                <span class="n">message_callback</span><span class="p">(</span><span class="n">client_id</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">True</span></div></div>
 </pre></div>
 

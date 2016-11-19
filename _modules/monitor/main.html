@@ -71,7 +71,7 @@
     <span class="c1"># get logger</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">init_logger</span><span class="p">(</span><span class="o">*</span><span class="n">config</span><span class="o">.</span><span class="n">get_logger_settings</span><span class="p">())</span>
     <span class="c1"># here we&#39;ll store all active connections</span>
-    <span class="n">connections</span> <span class="o">=</span> <span class="n">ClientConnections</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+    <span class="n">connections</span> <span class="o">=</span> <span class="n">ClientConnections</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">loop</span><span class="p">)</span>
 
     <span class="n">websock_server</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="k">try</span><span class="p">:</span>

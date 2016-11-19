@@ -58,42 +58,78 @@
 <span class="sd">    thread safe.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">loop</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize empty client dictionary</span>
+
+<span class="sd">        :param logger: System logger.</span>
+<span class="sd">        :param loop: Main asyncio event loop.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">loop</span>
 
 <div class="viewcode-block" id="ClientConnections.add_client"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.add_client">[docs]</a>    <span class="k">def</span> <span class="nf">add_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register new client which wants to receive messages to identifier &#39;id&#39;.</span>
-<span class="sd">        Only one subscriber per stream is allowed. Latter overrides previous one.</span>
+<span class="sd">        If there are any such messages, they are sent immediately. There can be</span>
+<span class="sd">        more subscribers per stream.</span>
 
 <span class="sd">        :param id: Identifier of required stream of messages</span>
 <span class="sd">        :return: Returns new asyncio.Queue on which can be wait for by</span>
 <span class="sd">            &#39;yield from&#39; command.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">new_queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_queue</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_queue</span><span class="p">)</span>
+
+        <span class="c1"># if there are already any messages, send them</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="p">[</span><span class="nb">id</span><span class="p">]:</span>
+                <span class="n">new_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: new client &#39;{}&#39; registered&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">new_queue</span></div>
 
-<div class="viewcode-block" id="ClientConnections.remove_client"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.remove_client">[docs]</a>    <span class="k">def</span> <span class="nf">remove_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<div class="viewcode-block" id="ClientConnections.remove_channel"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.remove_channel">[docs]</a>    <span class="k">def</span> <span class="nf">remove_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove client listening on &#39;id&#39; message stream. This means removing associated</span>
-<span class="sd">        queue and deleting the entry from internal dictionary.</span>
-<span class="sd">        If no such client exists, nothing is done.</span>
+<span class="sd">        Remove all clients listening on &#39;id&#39; channel. This means removing all associated</span>
+<span class="sd">        queues and received messages. If no such channel exists, nothing is done.</span>
+<span class="sd">        This method is called 5 minutes after last message of each channel.</span>
 
 <span class="sd">        :param id: Identifier of required stream of messages</span>
 <span class="sd">        :return: Nothing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: channel &#39;{}&#39; removed&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: channel &#39;{}&#39; removing failed - &quot;</span>
+                               <span class="s2">&quot; not present&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ClientConnections.remove_client"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.remove_client">[docs]</a>    <span class="k">def</span> <span class="nf">remove_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove client listening on &#39;id&#39; message stream with queue &#39;queue&#39;.</span>
+<span class="sd">        This means removing associated queue and deleting the entry from internal dictionary.</span>
+<span class="sd">        If no such client exists, nothing is done.</span>
+
+<span class="sd">        :param id: Identifier of required stream of messages</span>
+<span class="sd">        :param queue: Queue associated with client to be removed</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">clients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+            <span class="n">clients</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: client &#39;{}&#39; removed&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: client &#39;{}&#39; removing failed - &quot;</span>
                                <span class="s2">&quot; not present&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span></div>
+
 
 <div class="viewcode-block" id="ClientConnections.remove_all_clients"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.remove_all_clients">[docs]</a>    <span class="k">def</span> <span class="nf">remove_all_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -103,26 +139,31 @@
 <span class="sd">        :return: Nothing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client connection: all clients removed&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ClientConnections.send_message"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.ClientConnections.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Send &#39;message&#39; to client listening on stream with &#39;id&#39;. If &#39;id&#39; is not</span>
-<span class="sd">        known, the message is silently dropped. The message is put into queue,</span>
-<span class="sd">        so no message will get lost.</span>
+<span class="sd">        known, the message is saved for latter use. Messages for connected</span>
+<span class="sd">        clients are put into queues, so no message will get lost.</span>
 
 <span class="sd">        :param id: Identifier of required stream of messages</span>
 <span class="sd">        :param message: String containing text to be sent</span>
-<span class="sd">        :return: Returns True if message was sent, False otherwise</span>
+<span class="sd">        :return: Nothing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saved_messages</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
-            <span class="n">queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;client connection: Dropping message &#39;{}&#39; for &quot;</span>
-                                 <span class="s2">&quot;non-existing stream &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="nb">id</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">False</span></div></div>
+            <span class="k">for</span> <span class="n">queue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clients</span><span class="p">[</span><span class="nb">id</span><span class="p">]:</span>
+                <span class="n">queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="c1"># on last message schedule removing whole channel after 5 minute wait</span>
+        <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_channel</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="WebsocketServer"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.WebsocketServer">[docs]</a><span class="k">class</span> <span class="nc">WebsocketServer</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
@@ -160,8 +201,8 @@
 
 <span class="sd">        :param websocket: Socket with request</span>
 <span class="sd">        :param path: Requested path of socket (not used)</span>
-<span class="sd">        :return: Returns when socket is closed or future from ClientConnections</span>
-<span class="sd">            is cancelled.</span>
+<span class="sd">        :return: Returns when socket is closed or poison pill is found in message queue</span>
+<span class="sd">            from ClientConnections.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">wanted_id</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">try</span><span class="p">:</span>
@@ -180,7 +221,8 @@
         <span class="k">except</span> <span class="n">websockets</span><span class="o">.</span><span class="n">ConnectionClosed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;websocket server: connection closed for channel &#39;{}&#39;&quot;</span><span class="o">.</span> <span class="n">format</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">))</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_client</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">remove_client</span><span class="p">(</span><span class="n">wanted_id</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="WebsocketServer.run"><a class="viewcode-back" href="../../monitor.html#monitor.websocket_connections.WebsocketServer.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

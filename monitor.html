@@ -162,7 +162,7 @@ empty logger will be created.</p>
 <p>Classes and functions for websocket connections and message sending</p>
 <dl class="class">
 <dt id="monitor.websocket_connections.ClientConnections">
-<em class="property">class </em><code class="descclassname">monitor.websocket_connections.</code><code class="descname">ClientConnections</code><span class="sig-paren">(</span><em>logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">monitor.websocket_connections.</code><code class="descname">ClientConnections</code><span class="sig-paren">(</span><em>logger</em>, <em>loop</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Container for managing connected websocket clients. Messages are passed as
 asyncio.Queue item values, so all methods must be called from the same thread
@@ -172,7 +172,8 @@ thread safe.</p>
 <dt id="monitor.websocket_connections.ClientConnections.add_client">
 <code class="descname">add_client</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.add_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.add_client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register new client which wants to receive messages to identifier &#8216;id&#8217;.
-Only one subscriber per stream is allowed. Latter overrides previous one.</p>
+If there are any such messages, they are sent immediately. There can be
+more subscribers per stream.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -202,11 +203,11 @@ shutdown or when incoming connection is lost.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="monitor.websocket_connections.ClientConnections.remove_client">
-<code class="descname">remove_client</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.remove_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.remove_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove client listening on &#8216;id&#8217; message stream. This means removing associated
-queue and deleting the entry from internal dictionary.
-If no such client exists, nothing is done.</p>
+<dt id="monitor.websocket_connections.ClientConnections.remove_channel">
+<code class="descname">remove_channel</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.remove_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.remove_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all clients listening on &#8216;id&#8217; channel. This means removing all associated
+queues and received messages. If no such channel exists, nothing is done.
+This method is called 5 minutes after last message of each channel.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -220,11 +221,34 @@ If no such client exists, nothing is done.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="monitor.websocket_connections.ClientConnections.remove_client">
+<code class="descname">remove_client</code><span class="sig-paren">(</span><em>id</em>, <em>queue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.remove_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.remove_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove client listening on &#8216;id&#8217; message stream with queue &#8216;queue&#8217;.
+This means removing associated queue and deleting the entry from internal dictionary.
+If no such client exists, nothing is done.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id</strong> &#8211; Identifier of required stream of messages</li>
+<li><strong>queue</strong> &#8211; Queue associated with client to be removed</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Nothing</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="monitor.websocket_connections.ClientConnections.send_message">
 <code class="descname">send_message</code><span class="sig-paren">(</span><em>id</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/monitor/websocket_connections.html#ClientConnections.send_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#monitor.websocket_connections.ClientConnections.send_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send &#8216;message&#8217; to client listening on stream with &#8216;id&#8217;. If &#8216;id&#8217; is not
-known, the message is silently dropped. The message is put into queue,
-so no message will get lost.</p>
+known, the message is saved for latter use. Messages for connected
+clients are put into queues, so no message will get lost.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -235,7 +259,7 @@ so no message will get lost.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns True if message was sent, False otherwise</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Nothing</p>
 </td>
 </tr>
 </tbody>
@@ -265,8 +289,8 @@ finish, there is join() method (as in threading.Thread class).</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns when socket is closed or future from ClientConnections
-is cancelled.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Returns when socket is closed or poison pill is found in message queue
+from ClientConnections.</p>
 </td>
 </tr>
 </tbody>
