@@ -2,7 +2,7 @@ Monitor
 =======
 
 .. image:: https://travis-ci.org/ReCodEx/monitor.svg?branch=master
-    :target: https://travis-ci.org/ReCodEx/monitor
+   :target: https://travis-ci.org/ReCodEx/monitor
 
 .. image:: http://img.shields.io/:license-mit-blue.svg
    :target: http://badges.mit-license.org
@@ -12,6 +12,9 @@ Monitor
 
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
    :target: http://recodex.github.io/monitor/
+
+.. image:: https://img.shields.io/github/release/recodex/monitor.svg
+   :target: https://github.com/ReCodEx/wiki/wiki/Changelog
 
 Monitor is an optional part of the ReCodEx solution for reporting progress of
 job evaluation back to users in the real time. It is a daemon that reads status messages of all running job evaluations from one ZeroMQ socket and send them to proper WebSocket connection. Monitor is written in Python, tested versions are 3.4 and 3.5.
