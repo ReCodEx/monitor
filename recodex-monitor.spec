@@ -1,8 +1,8 @@
 %define name recodex-monitor
 %define short_name monitor
 %define version 1.0.1
-%define unmangled_version 2464f987fec22833d468faa61caba416f13402d4
-%define release 4
+%define unmangled_version fb200283e9c7fde3c196baced0c61b7bf1a51029
+%define release 9
 
 Summary: Publish ZeroMQ messages through WebSockets
 Name: %{name}
@@ -17,13 +17,11 @@ Vendor: Petr Stefan <UNKNOWN>
 Url: https://github.com/ReCodEx/monitor
 
 BuildRequires: systemd
+%{?fedora:BuildRequires: python3 python3-devel python3-setuptools}
+%{?rhel:BuildRequires: python34 python34-devel python34-setuptools}
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-%if 0%{?fedora}
-BuildRequires: python3 python3-devel python3-setuptools python3-pip
-%endif
-
 
 Source0: https://github.com/ReCodEx/%{short_name}/archive/%{unmangled_version}.tar.gz#/%{short_name}-%{unmangled_version}.tar.gz
 
@@ -34,36 +32,22 @@ ReCodEx monitor for proxying zeromq messages to websocket channels
 %setup -n %{short_name}-%{unmangled_version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT
+%py3_install
+mkdir -p %{buildroot}/var/log/recodex
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%pre
+getent group recodex >/dev/null || groupadd -r recodex
+getent passwd recodex >/dev/null || useradd -r -g recodex -d %{_sysconfdir}/recodex -s /sbin/nologin -c "ReCodEx Code Examiner" recodex
+exit 0
+
 %post
 %systemd_post 'recodex-monitor.service'
-
-#!/bin/sh
-
-CONF_DIR=/etc/recodex
-LOG_DIR=/var/log/recodex
-
-# Create 'recodex' user if not exist
-id -u recodex > /dev/null 2>&1
-if [ $? -eq 1 ]
-then
-	useradd --system --shell /sbin/nologin recodex
-fi
-
-# Create default logging directory and set proper permission
-mkdir -p ${LOG_DIR}
-chown -R recodex:recodex ${LOG_DIR}
-
-# Change owner of config files
-chown -R recodex:recodex ${CONF_DIR}
-
 
 %preun
 %systemd_preun 'recodex-monitor.service'
@@ -73,7 +57,12 @@ chown -R recodex:recodex ${CONF_DIR}
 
 %files
 %defattr(-,root,root)
-%{python_sitelib}/*
+%dir %attr(-,recodex,recodex) %{_sysconfdir}/recodex/monitor
+%dir %attr(-,recodex,recodex) /var/log/recodex
+
+%{python3_sitelib}/monitor/
+%{python3_sitelib}/recodex_monitor-%{version}-py?.?.egg-info/
+%{_bindir}/recodex-monitor
 %config(noreplace) %attr(-,recodex,recodex) %{_sysconfdir}/recodex/monitor/config.yml
 /lib/systemd/system/recodex-monitor.service
 
