@@ -163,10 +163,11 @@ class WebsocketServer(threading.Thread):
             from ClientConnections.
         """
         wanted_id = None
+        queue = None
         try:
             wanted_id = yield from websocket.recv()
             queue = self._connections.add_client(wanted_id)
-            self._logger.debug("websocket server: got client for channel '{}'".format(wanted_id))
+            self._logger.info("websocket server: got client for channel '{}'".format(wanted_id))
             while True:
                 # wait for message
                 result = yield from queue.get()
@@ -177,9 +178,11 @@ class WebsocketServer(threading.Thread):
                 yield from websocket.send(result)
                 self._logger.debug("websocket server: message sent to channel '{}'".format(wanted_id))
         except websockets.ConnectionClosed:
-            self._logger.info("websocket server: connection closed for channel '{}'". format(wanted_id))
+            if wanted_id:
+                self._logger.info("websocket server: connection closed for channel '{}'". format(wanted_id))
         finally:
-            self._connections.remove_client(wanted_id, queue)
+            if wanted_id and queue:
+                self._connections.remove_client(wanted_id, queue)
 
 
     def run(self):
