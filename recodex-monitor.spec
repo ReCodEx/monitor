@@ -2,7 +2,7 @@
 %define short_name monitor
 %define version 1.0.1
 %define unmangled_version 2464f987fec22833d468faa61caba416f13402d4
-%define release 3
+%define release 4
 
 Summary: Publish ZeroMQ messages through WebSockets
 Name: %{name}
@@ -16,11 +16,16 @@ BuildArch: noarch
 Vendor: Petr Stefan <UNKNOWN>
 Url: https://github.com/ReCodEx/monitor
 
-Source0: https://github.com/ReCodEx/%{short_name}/archive/%{unmangled_version}.tar.gz#/%{short_name}-%{unmangled_version}.tar.gz
-
+BuildRequires: systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
 %if 0%{?fedora}
 BuildRequires: python3 python3-devel python3-setuptools python3-pip
 %endif
+
+
+Source0: https://github.com/ReCodEx/%{short_name}/archive/%{unmangled_version}.tar.gz#/%{short_name}-%{unmangled_version}.tar.gz
 
 %description
 ReCodEx monitor for proxying zeromq messages to websocket channels
@@ -32,12 +37,14 @@ ReCodEx monitor for proxying zeromq messages to websocket channels
 python3 setup.py build
 
 %install
-python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
+python3 setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post
+%systemd_post 'recodex-monitor.service'
+
 #!/bin/sh
 
 CONF_DIR=/etc/recodex
@@ -58,6 +65,15 @@ chown -R recodex:recodex ${LOG_DIR}
 chown -R recodex:recodex ${CONF_DIR}
 
 
+%preun
+%systemd_preun 'recodex-monitor.service'
 
-%files -f INSTALLED_FILES
+%postun
+%systemd_postun_with_restart 'recodex-monitor.service'
+
+%files
 %defattr(-,root,root)
+%{python_sitelib}/*
+%config(noreplace) %attr(-,recodex,recodex) %{_sysconfdir}/recodex/monitor/config.yml
+/lib/systemd/system/recodex-monitor.service
+

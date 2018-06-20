@@ -23,7 +23,7 @@ setup(name='recodex-monitor',
       packages=['monitor'],
       package_data={'': ['./install/*']},
       data_files=[
-          ('/etc/systemd/system', ['monitor/install/recodex-monitor.service']),
+          ('/lib/systemd/system', ['monitor/install/recodex-monitor.service']),
           ('/etc/recodex/monitor', ['monitor/install/config.yml'])
           ],
       entry_points={'console_scripts': ['recodex-monitor = monitor.main:main']}
