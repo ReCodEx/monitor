@@ -22,6 +22,8 @@ BuildRequires: systemd
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+%{?fedora:Requires: python3-PyYAML python3-websockets python3-zmq}
+%{?rhel:Requires: python34-PyYAML}
 
 Source0: https://github.com/ReCodEx/%{short_name}/archive/%{unmangled_version}.tar.gz#/%{short_name}-%{unmangled_version}.tar.gz
 
