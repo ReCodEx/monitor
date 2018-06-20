@@ -1,14 +1,13 @@
 %define name recodex-monitor
+%define short_name monitor
 %define version 1.0.1
-%define unmangled_version 1.0.1
-%define unmangled_version 1.0.1
-%define release 1
+%define unmangled_version 2464f987fec22833d468faa61caba416f13402d4
+%define release 3
 
 Summary: Publish ZeroMQ messages through WebSockets
 Name: %{name}
 Version: %{version}
 Release: %{release}
-Source0: %{name}-%{unmangled_version}.tar.gz
 License: MIT
 Group: Development/Libraries
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -17,11 +16,17 @@ BuildArch: noarch
 Vendor: Petr Stefan <UNKNOWN>
 Url: https://github.com/ReCodEx/monitor
 
+Source0: https://github.com/ReCodEx/%{short_name}/archive/%{unmangled_version}.tar.gz#/%{short_name}-%{unmangled_version}.tar.gz
+
+%if 0%{?fedora}
+BuildRequires: python3 python3-devel python3-setuptools python3-pip
+%endif
+
 %description
-UNKNOWN
+ReCodEx monitor for proxying zeromq messages to websocket channels
 
 %prep
-%setup -n %{name}-%{unmangled_version} -n %{name}-%{unmangled_version}
+%setup -n %{short_name}-%{unmangled_version}
 
 %build
 python3 setup.py build
