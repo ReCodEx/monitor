@@ -1,8 +1,8 @@
 Monitor
 =======
 
-.. image:: https://travis-ci.org/ReCodEx/monitor.svg?branch=master
-   :target: https://travis-ci.org/ReCodEx/monitor
+.. image:: https://github.com/ReCodEx/monitor/workflows/CI/badge.svg
+   :target: https://github.com/ReCodEx/monitor/actions
 
 .. image:: http://img.shields.io/:license-mit-blue.svg
    :target: http://badges.mit-license.org
