@@ -2,7 +2,7 @@
 %define short_name monitor
 %define version 1.0.1
 %define unmangled_version fb200283e9c7fde3c196baced0c61b7bf1a51029
-%define release 12
+%define release 15
 
 Summary: Publish ZeroMQ messages through WebSockets
 Name: %{name}
@@ -18,7 +18,7 @@ Url: https://github.com/ReCodEx/monitor
 
 BuildRequires: systemd
 %{?fedora:BuildRequires: python3 python3-devel python3-setuptools}
-%{?rhel:BuildRequires: python36 python3-devel python3-setuptools}
+%{?rhel:BuildRequires: python3 python3-devel python3-setuptools}
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -68,5 +68,5 @@ exit 0
 %{python3_sitelib}/monitor/
 %{python3_sitelib}/recodex_monitor-%{version}-py?.?.egg-info/
 %{_bindir}/recodex-monitor
-%config(noreplace) %attr(-,recodex,recodex) %{_sysconfdir}/recodex/monitor/config.yml
+%config(noreplace) %attr(0600,recodex,recodex) %{_sysconfdir}/recodex/monitor/config.yml
 /lib/systemd/system/recodex-monitor.service
