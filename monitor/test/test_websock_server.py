@@ -33,8 +33,10 @@ class TestWebsocketServer(unittest.TestCase):
 
         received_id = asyncio.Future()
         received_id.set_result("1234")
+        response = asyncio.Future()
+        response.set_result(None)
         websocket_mock.recv.return_value = received_id
-        websocket_mock.send.return_value = [None]
+        websocket_mock.send.return_value = response
 
         loop = asyncio.new_event_loop()
         queue.put_nowait("result text")
