@@ -88,7 +88,6 @@ class ClientConnections:
             self._logger.debug("client connection: client '{}' removing failed - "
                                " not present".format(id))
 
-
     def remove_all_clients(self):
         """
         Remove all registered clients. This method could be called on app
@@ -121,7 +120,7 @@ class ClientConnections:
 
         # on last message schedule removing whole channel after 5 minute wait
         if message is None:
-            self._loop.call_later(5*60, self.remove_channel, id)
+            self._loop.call_later(5 * 60, self.remove_channel, id)
 
 
 class WebsocketServer(threading.Thread):
@@ -152,8 +151,7 @@ class WebsocketServer(threading.Thread):
         loop.run_until_complete(start_server)
         self._logger.info("websocket server initialized at {}:{}".format(hostname, port))
 
-    @asyncio.coroutine
-    def connection_handler(self, websocket, path):
+    async def connection_handler(self, websocket, path):
         """
         Internal asyncio.coroutine function for handling one websocket request.
 
@@ -165,17 +163,17 @@ class WebsocketServer(threading.Thread):
         wanted_id = None
         queue = None
         try:
-            wanted_id = yield from websocket.recv()
+            wanted_id = await websocket.recv()
             queue = self._connections.add_client(wanted_id)
             self._logger.info("websocket server: got client for channel '{}'".format(wanted_id))
             while True:
                 # wait for message
-                result = yield from queue.get()
+                result = await queue.get()
                 if not result:
                     break
                 self._logger.debug("websocket server: message '{}' for channel '{}'".format(result, wanted_id))
                 # send message to client
-                yield from websocket.send(result)
+                await websocket.send(result)
                 self._logger.debug("websocket server: message sent to channel '{}'".format(wanted_id))
         except websockets.ConnectionClosed:
             if wanted_id:
@@ -183,7 +181,6 @@ class WebsocketServer(threading.Thread):
         finally:
             if wanted_id and queue:
                 self._connections.remove_client(wanted_id, queue)
-
 
     def run(self):
         """
@@ -194,4 +191,3 @@ class WebsocketServer(threading.Thread):
         """
         asyncio.set_event_loop(self._loop)
         self._loop.run_forever()
-

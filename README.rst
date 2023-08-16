@@ -32,13 +32,12 @@ Installation
 COPR Installation
 ~~~~~~~~~~~~~~~~~
 
-Follows description for CentOS which will do all steps as described in _Manual Installation_.
+Follows description for CentOS which will do all steps as described in *Manual Installation*.
 
-.. code::
-
-# yum install yum-plugin-copr
-# yum copr enable semai/ReCodEx
-# yum install recodex-monitor
+.. code:: bash
+  ~# dnf install dnf-plugin-copr
+  ~# dnf copr enable semai/ReCodEx
+  ~# dnf install recodex-monitor
 
 Manual Installation
 ~~~~~~~~~~~~~~~~~~~
@@ -47,9 +46,9 @@ For monitor functionality there are some required packages. All of them are
 listed in _requirements.txt_ file in the repository and can be installed by
 `pip` package manager as
 
-.. code::
+.. code:: bash
 
-$ pip install -r requirements.txt
+  ~$ pip install -r requirements.txt
 
 **Description of dependencies:**
 
@@ -75,23 +74,23 @@ file will be granted to that user.
   this:
 	- run command
 
-.. code::
+.. code:: bash
 
-$ python3 setup.py bdist_rpm --post-install ./install/postints
+  ~$ python3 setup.py bdist_rpm --post-install ./install/postints
 
-	to generate binary `.rpm` package or download precompiled one from releases
-	tab of monitor GitHub repository (it is architecture independent package)
-	- install package using
+to generate binary `.rpm` package or download precompiled one from releases
+tab of monitor GitHub repository (it is architecture independent package)
+- install package using
 
-.. code::
+.. code:: bash
 
-# yum install ./dist/recodex-monitor-<version>-1.noarch.rpm
+  ~# dnf install ./dist/recodex-monitor-<version>-1.noarch.rpm
 
-- Other Linux distributions can install cleaner straight
+- Other Linux distributions can install monitor by calling setup directly...
 
-.. code::
-$ python3 setup.py install --install-scripts /usr/bin
-# ./install/postinst
+.. code:: bash
+  ~$ python3 setup.py install --install-scripts /usr/bin
+  ~# ./install/postinst
 
 
 Usage
@@ -102,26 +101,26 @@ ReCodEx solution.
 
 - Running monitor is fairly simple:
 
-.. code::
-# systemctl start recodex-monitor.service
+.. code:: bash
+  ~# systemctl start recodex-monitor.service
 
 - Current state can be obtained by
 
-.. code::
-# systemctl status recodex-monitor.service
+.. code:: bash
+  ~# systemctl status recodex-monitor.service
 
 You should see green **Active (running)**.
 - Setting up monitor to be started on system startup:
 
-.. code::
-# systemctl enable recodex-monitor.service
+.. code:: bash
+  ~# systemctl enable recodex-monitor.service
 
 Alternatively monitor can be started directly from command line with specifying
 path to configuration file. Note that this command will not start monitor as a
 daemon.
 
-.. code::
-$ recodex-monitor -c /etc/recodex/monitor/config.yml
+.. code:: bash
+  ~$ recodex-monitor -c /etc/recodex/monitor/config.yml
 
 Or monitor could be executed from within repository like follows:
 
@@ -160,19 +159,19 @@ Example configuration file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: yaml
----
-websocket_uri:
-    - "127.0.0.1"
-    - 4567
-zeromq_uri:
-    - "127.0.0.1"
-    - 7894
-logger:
-    file: "/var/log/recodex/monitor.log"
-    level: "debug"
-    max-size: 1048576  # 1 MB
-    rotations: 3
-...
+  ---
+  websocket_uri:
+      - "127.0.0.1"
+      - 4567
+  zeromq_uri:
+      - "127.0.0.1"
+      - 7894
+  logger:
+      file: "/var/log/recodex/monitor.log"
+      level: "debug"
+      max-size: 1048576  # 1 MB
+      rotations: 3
+  ...
 
 Documentation
 -------------
