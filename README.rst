@@ -89,6 +89,7 @@ tab of monitor GitHub repository (it is architecture independent package)
 - Other Linux distributions can install monitor by calling setup directly...
 
 .. code:: bash
+  
   ~$ python3 setup.py install --install-scripts /usr/bin
   ~# ./install/postinst
 

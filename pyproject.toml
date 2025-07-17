@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "recodex-monitor"
+dynamic = ["version"]
+description = "Publish ZeroMQ messages through WebSockets"
+readme = "README.rst"
+license = { file = "LICENSE" }
+authors = [
+    {name = "ReCodEx Team"}
+]
+keywords = ["ReCodEx", "messages", "ZeroMQ", "WebSockets"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "zmq",
+    "websockets",
+    "PyYAML",
+]
+requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://github.com/ReCodEx/monitor"
+Repository = "https://github.com/ReCodEx/monitor"
+Issues = "https://github.com/ReCodEx/monitor/issues"
+
+[project.scripts]
+recodex-monitor = "monitor.main:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "monitor.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["monitor*"]
+
+[tool.setuptools.package-data]
+"monitor" = ["install/*"]
