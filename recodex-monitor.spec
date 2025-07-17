@@ -1,7 +1,7 @@
 %define name recodex-monitor
 %define short_name monitor
-%define version 1.1.1
-%define unmangled_version 17032a170de28fd0a45d603f179dfcee89efaba7
+%define version 1.2.0
+%define unmangled_version ca7c8e7d34a0606e9f28db3b4b4942042c85d557
 %define release 1
 
 Summary: Publish ZeroMQ messages through WebSockets
@@ -17,8 +17,10 @@ Vendor: Petr Stefan <UNKNOWN>
 Url: https://github.com/ReCodEx/monitor
 
 BuildRequires: systemd
-%{?fedora:BuildRequires: python3 python3-devel python3-setuptools}
-%{?rhel:BuildRequires: python3 python3-devel python3-setuptools}
+%{?fedora:BuildRequires: python3 python3-devel python3-setuptools python3-pip python3-wheel}
+%{?rhel:BuildRequires: python3 python3-devel python3-setuptools python3-pip python3-wheel}
+BuildRequires: python3dist(build)
+BuildRequires: python3dist(setuptools) >= 61.0
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -34,11 +36,24 @@ Monitor is a proxying component that channels zeromq messages into websocket. It
 %setup -n %{short_name}-%{unmangled_version}
 
 %build
-%py3_build
+# Build using modern Python build system with pyproject.toml
+# This replaces the legacy setup.py build process
+%{python3} -m build --wheel --no-isolation
+
 
 %install
-%py3_install
+# Install the wheel using pip (modern approach)
+%{python3} -m pip install --no-deps --no-index --find-links dist/ --root=%{buildroot} recodex-monitor
+
+# Create log directory
 mkdir -p %{buildroot}/var/log/recodex
+
+# Install system files manually (these files are no longer installed automatically with pyproject.toml)
+mkdir -p %{buildroot}/lib/systemd/system
+mkdir -p %{buildroot}%{_sysconfdir}/recodex/monitor
+install -m 644 monitor/install/recodex-monitor.service %{buildroot}/lib/systemd/system/
+install -m 644 monitor/install/config.yml %{buildroot}%{_sysconfdir}/recodex/monitor/
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -66,7 +81,7 @@ exit 0
 %dir %attr(-,recodex,recodex) /var/log/recodex
 
 %{python3_sitelib}/monitor/
-%{python3_sitelib}/recodex_monitor-%{version}-py?.?.egg-info/
+%{python3_sitelib}/recodex_monitor-%{version}.dist-info/
 %{_bindir}/recodex-monitor
 %config(noreplace) %attr(0600,recodex,recodex) %{_sysconfdir}/recodex/monitor/config.yml
 /lib/systemd/system/recodex-monitor.service

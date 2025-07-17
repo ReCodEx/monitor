@@ -7,9 +7,7 @@ zmq
 
 # WebSockets
 websockets
-asyncio
 
-# Argument and configuration parsing
-pyyaml
-argparse
+# Configuration parsing
+PyYAML
 
