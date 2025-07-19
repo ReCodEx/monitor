@@ -1,8 +1,8 @@
 %define name recodex-monitor
 %define short_name monitor
 %define version 1.2.0
-%define unmangled_version e7445be80385b4fba0870294b86344e2e44a1390
-%define release 1
+%define unmangled_version 56bfec2ffa5d4eff0d3b8b92bce3837175ca0b53
+%define release 2
 
 Summary: Publish ZeroMQ messages through WebSockets
 Name: %{name}
@@ -24,8 +24,9 @@ BuildRequires: python3dist(setuptools) >= 61.0
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-%{?fedora:Requires: python3-PyYAML python3-websockets python3-zmq}
-%{?rhel:Requires: python3-PyYAML}
+# %{?fedora:Requires: python3-PyYAML python3-websockets python3-zmq}
+# %{?rhel:Requires: python3-PyYAML python3-websockets python3-pyzmq}
+Requires: python3-PyYAML python3-websockets python3-pyzmq
 
 Source0: https://github.com/ReCodEx/%{short_name}/archive/%{unmangled_version}.tar.gz#/%{short_name}-%{unmangled_version}.tar.gz
 
@@ -64,9 +65,9 @@ getent passwd recodex >/dev/null || useradd -r -g recodex -d %{_sysconfdir}/reco
 exit 0
 
 %post
-%if 0%{?rhel}
-	pip3 install websockets zmq
-%endif
+#%if 0%{?rhel}
+#	pip3 install websockets zmq
+#%endif
 %systemd_post 'recodex-monitor.service'
 
 %preun

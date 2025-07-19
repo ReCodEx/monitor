@@ -52,7 +52,7 @@ listed in _requirements.txt_ file in the repository and can be installed by
 
 **Description of dependencies:**
 
-- zmq -- binding to ZeroMQ framework
+- pyzmq -- binding to ZeroMQ framework
 - websockets -- framework for communication over WebSockets
 - asyncio -- library for fast asynchronous operations
 - pyyaml -- parsing YAML configuration files
