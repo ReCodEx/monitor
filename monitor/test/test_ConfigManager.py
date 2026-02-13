@@ -18,6 +18,7 @@ class TestConfigManager(unittest.TestCase):
 
     def test_websock_uri_loaded(self):
         handle, path = tempfile.mkstemp()
+        os.close(handle)
         with open(path, 'w') as f:
             f.write('websocket_uri:\n  - 77.75.76.3\n  - 8080')
 
@@ -35,6 +36,7 @@ class TestConfigManager(unittest.TestCase):
 
     def test_zeromq_uri_loaded(self):
         handle, path = tempfile.mkstemp()
+        os.close(handle)
         with open(path, 'w') as f:
             f.write('zeromq_uri:\n  - 77.75.76.3\n  - 8080')
 
@@ -52,6 +54,7 @@ class TestConfigManager(unittest.TestCase):
 
     def test_logger_path_loaded(self):
         handle, path = tempfile.mkstemp()
+        os.close(handle)
         with open(path, 'w') as f:
             f.write('logger:\n  file: /var/log/tmp/file.log\n  level: "debug"\n  max-size: 564\n  rotations: 7')
 
@@ -78,6 +81,7 @@ class TestLoggerInitialization(unittest.TestCase):
 
     def test_valid_creation(self):
         handle, path = tempfile.mkstemp()
+        os.close(handle)
         logger = init_logger(path, logging.WARNING, 450, 2)
         logger.debug("aaa")
         logger.warning("bbb")
@@ -89,5 +93,9 @@ class TestLoggerInitialization(unittest.TestCase):
             content = f.readlines()
             # expect 5 lines - 3 of header and one with 'bbb' and one 'ccc'
             self.assertEqual(len(content), 5)
+
+        for handler in list(logger.handlers):
+            handler.close()
+            logger.removeHandler(handler)
 
         os.remove(path)

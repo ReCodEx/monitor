@@ -4,8 +4,10 @@ Classes and functions for websocket connections and message sending
 """
 
 import asyncio
-import websockets
 import threading
+
+from websockets.asyncio.server import serve
+from websockets.exceptions import ConnectionClosed
 
 
 class ClientConnections:
@@ -147,16 +149,15 @@ class WebsocketServer(threading.Thread):
         self._logger = logger
         hostname, port = websock_uri
         asyncio.set_event_loop(loop)
-        start_server = websockets.serve(self.connection_handler, hostname, port)
-        loop.run_until_complete(start_server)
+        start_server = serve(self.connection_handler, hostname, port)
+        self._server = loop.run_until_complete(start_server)
         self._logger.info("websocket server initialized at {}:{}".format(hostname, port))
 
-    async def connection_handler(self, websocket, path):
+    async def connection_handler(self, websocket):
         """
         Internal asyncio.coroutine function for handling one websocket request.
 
         :param websocket: Socket with request
-        :param path: Requested path of socket (not used)
         :return: Returns when socket is closed or poison pill is found in message queue
             from ClientConnections.
         """
@@ -175,7 +176,7 @@ class WebsocketServer(threading.Thread):
                 # send message to client
                 await websocket.send(result)
                 self._logger.debug("websocket server: message sent to channel '{}'".format(wanted_id))
-        except websockets.ConnectionClosed:
+        except ConnectionClosed:
             if wanted_id:
                 self._logger.info("websocket server: connection closed for channel '{}'". format(wanted_id))
         finally:

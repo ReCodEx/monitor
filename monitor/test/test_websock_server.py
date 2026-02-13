@@ -8,7 +8,7 @@ from monitor.websocket_connections import WebsocketServer
 
 class TestWebsocketServer(unittest.TestCase):
     @patch('asyncio.set_event_loop')
-    @patch('websockets.serve')
+    @patch('monitor.websocket_connections.serve')
     def test_init(self, mock_websock_serve, mock_set_loop):
         loop = MagicMock()
         logger = MagicMock()
@@ -22,7 +22,8 @@ class TestWebsocketServer(unittest.TestCase):
         mock_websock_serve.assert_called_once_with(server.connection_handler, "ip_address", 4512)
         loop.run_until_complete.assert_called_once_with("0101")
 
-    def test_connection_handler(self):
+    @patch('monitor.websocket_connections.serve')
+    def test_connection_handler(self, mock_websock_serve):
         queue = asyncio.Queue()
         logger = MagicMock()
         connection_mock = MagicMock()
@@ -31,20 +32,22 @@ class TestWebsocketServer(unittest.TestCase):
 
         websocket_mock = MagicMock()
 
-        received_id = asyncio.Future()
+        loop = asyncio.new_event_loop()
+        received_id = loop.create_future()
         received_id.set_result("1234")
-        response = asyncio.Future()
+        response = loop.create_future()
         response.set_result(None)
         websocket_mock.recv.return_value = received_id
         websocket_mock.send.return_value = response
-
-        loop = asyncio.new_event_loop()
         queue.put_nowait("result text")
         queue.put_nowait(None)
 
+        start_server_future = loop.create_future()
+        start_server_future.set_result("0101")
+        mock_websock_serve.return_value = start_server_future
         websock_server = WebsocketServer(("localhost", 11111), connection_mock, loop, logger)
         # actually call the method
-        loop.run_until_complete(websock_server.connection_handler(websocket_mock, None))
+        loop.run_until_complete(websock_server.connection_handler(websocket_mock))
 
         # test the constraints
         websocket_mock.recv.assert_called_once_with()
@@ -53,9 +56,11 @@ class TestWebsocketServer(unittest.TestCase):
         connection_mock.remove_client.assert_called_once_with("1234", queue)
 
     @patch('asyncio.set_event_loop')
-    def test_run(self, mock_set_loop):
+    @patch('monitor.websocket_connections.serve')
+    def test_run(self, mock_websock_serve, mock_set_loop):
         loop = MagicMock()
         logger = MagicMock()
+        mock_websock_serve.return_value = "0101"
         server = WebsocketServer(("ip_address", 123), None, loop, logger)
         server.run()
         mock_set_loop.assert_called_with(loop)
