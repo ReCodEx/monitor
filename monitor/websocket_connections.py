@@ -147,11 +147,14 @@ class WebsocketServer(threading.Thread):
         self._connections = connections
         self._loop = loop
         self._logger = logger
-        hostname, port = websock_uri
-        asyncio.set_event_loop(loop)
-        start_server = serve(self.connection_handler, hostname, port)
-        self._server = loop.run_until_complete(start_server)
-        self._logger.info("websocket server initialized at {}:{}".format(hostname, port))
+        self._hostname, self._port = websock_uri
+        self._server = None
+
+    async def _start_server(self):
+        self._server = await serve(self.connection_handler, self._hostname, self._port)
+        self._logger.info(
+            "websocket server initialized at {}:{}".format(self._hostname, self._port)
+        )
 
     async def connection_handler(self, websocket):
         """
@@ -191,4 +194,10 @@ class WebsocketServer(threading.Thread):
             nothing.
         """
         asyncio.set_event_loop(self._loop)
-        self._loop.run_forever()
+        self._loop.run_until_complete(self._start_server())
+        try:
+            self._loop.run_forever()
+        finally:
+            if self._server is not None:
+                self._server.close()
+                self._loop.run_until_complete(self._server.wait_closed())

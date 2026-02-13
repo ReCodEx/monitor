@@ -2,25 +2,21 @@
 
 import unittest
 import asyncio
-from unittest.mock import *
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
 from monitor.websocket_connections import WebsocketServer
 
 
 class TestWebsocketServer(unittest.TestCase):
-    @patch('asyncio.set_event_loop')
     @patch('monitor.websocket_connections.serve')
-    def test_init(self, mock_websock_serve, mock_set_loop):
-        loop = MagicMock()
+    def test_init(self, mock_websock_serve):
+        loop = asyncio.new_event_loop()
         logger = MagicMock()
-        mock_websock_serve.return_value = "0101"
-        WebsocketServer.connection_handler = MagicMock()
         server = WebsocketServer(("ip_address", 4512), None, loop, logger)
 
         self.assertEqual(server._loop, loop)
         self.assertIsNone(server._connections)
-        mock_set_loop.assert_called_once_with(loop)
-        mock_websock_serve.assert_called_once_with(server.connection_handler, "ip_address", 4512)
-        loop.run_until_complete.assert_called_once_with("0101")
+        mock_websock_serve.assert_not_called()
+        loop.close()
 
     @patch('monitor.websocket_connections.serve')
     def test_connection_handler(self, mock_websock_serve):
@@ -56,12 +52,23 @@ class TestWebsocketServer(unittest.TestCase):
         connection_mock.remove_client.assert_called_once_with("1234", queue)
 
     @patch('asyncio.set_event_loop')
-    @patch('monitor.websocket_connections.serve')
+    @patch('monitor.websocket_connections.serve', new_callable=AsyncMock)
     def test_run(self, mock_websock_serve, mock_set_loop):
-        loop = MagicMock()
+        loop = asyncio.new_event_loop()
         logger = MagicMock()
-        mock_websock_serve.return_value = "0101"
+
+        server_obj = MagicMock()
+        wait_closed_future = loop.create_future()
+        wait_closed_future.set_result(None)
+        server_obj.wait_closed.return_value = wait_closed_future
+        mock_websock_serve.return_value = server_obj
+
         server = WebsocketServer(("ip_address", 123), None, loop, logger)
+
+        loop.call_later(0.05, loop.stop)
         server.run()
+
         mock_set_loop.assert_called_with(loop)
-        loop.run_forever.assert_called_once_with()
+        mock_websock_serve.assert_awaited_once_with(ANY, "ip_address", 123)
+        server_obj.close.assert_called_once_with()
+        loop.close()
