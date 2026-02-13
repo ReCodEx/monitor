@@ -17,7 +17,7 @@ Monitor
    :target: https://github.com/ReCodEx/wiki/wiki/Changelog
 
 Monitor is an optional part of the ReCodEx solution for reporting progress of
-job evaluation back to users in the real time. It is a daemon that reads status messages of all running job evaluations from one ZeroMQ socket and send them to proper WebSocket connection. Monitor is written in Python, tested versions are 3.4 and 3.5.
+job evaluation back to users in the real time. It is a daemon that reads status messages of all running job evaluations from one ZeroMQ socket and send them to proper WebSocket connection. Monitor is written in Python (>= 3.9).
 
 There is just one monitor instance required per broker. Also, monitor has to be
 publicly visible (has to have public IP address or be behind public proxy
@@ -64,7 +64,7 @@ Installation will provide you following files:
 - `/etc/recodex/monitor/config.yml` -- configuration file
 - `/etc/systemd/system/recodex-monitor.service` -- systemd startup script
 - code files will be installed in location depending on your system settings,
-  mostly into `/usr/lib/python3.5/site-packages/monitor/` or similar
+  mostly into `/usr/lib/python3.9/site-packages/monitor/` or similar
 
 Systemd script runs monitor binary as specific _recodex_ user, so in `postinst`
 script user and group of this name are created. Also, ownership of configuration
