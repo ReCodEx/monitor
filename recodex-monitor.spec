@@ -1,7 +1,7 @@
 %define name recodex-monitor
 %define short_name monitor
 %define version 1.3.0
-%define unmangled_version 8faf3e853089f0948f2a465da6507e4128aae617
+%define unmangled_version 3225ceb1c076c7a35d83abb28195bcac0c999f51
 %define release 1
 
 Summary: Publish ZeroMQ messages through WebSockets
@@ -86,4 +86,3 @@ exit 0
 /lib/systemd/system/recodex-monitor.service
 
 %changelog
-	
