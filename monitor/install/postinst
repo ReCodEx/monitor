@@ -15,5 +15,8 @@ mkdir -p ${LOG_DIR}
 chown -R recodex:recodex ${LOG_DIR}
 
 # Change owner of config files
+mkdir -p "$CONF_DIR/monitor"
+if [ ! -f "$CONF_DIR/monitor/config.yml" ]; then
+	cp ./config.yml "$CONF_DIR/monitor/config.yml"
+fi
 chown -R recodex:recodex ${CONF_DIR}
-

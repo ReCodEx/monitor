@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "recodex-monitor"
 dynamic = ["version"]
 description = "Publish ZeroMQ messages through WebSockets"
-readme = "README.rst"
-license = { file = "LICENSE" }
+readme = "README.md"
+license = "MIT"
 authors = [
     {name = "ReCodEx Team"}
 ]

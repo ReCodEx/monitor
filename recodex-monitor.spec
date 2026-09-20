@@ -1,8 +1,8 @@
 %define name recodex-monitor
 %define short_name monitor
 %define version 1.3.0
-%define unmangled_version 3225ceb1c076c7a35d83abb28195bcac0c999f51
-%define release 1
+%define unmangled_version e6f8a1dd25c5837c0aef5019b91e5987bfc15c85
+%define release 2
 
 Summary: Publish ZeroMQ messages through WebSockets
 Name: %{name}
